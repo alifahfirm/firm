@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlifahLawFirm – Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8CC82;
+    --dark: #0D0D0D;
+    --darker: #070707;
+    --card: #161616;
+    --border: #2a2a2a;
+    --text: #E8E4DC;
+    --muted: #888;
+    --accent: #C9A84C;
+    --danger: #E05252;
+    --success: #52C97F;
+    --info: #5296C9;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--darker);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(13,13,13,0.95);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+  .logo span { color: var(--text); }
+
+  nav ul { list-style:none; display:flex; gap:28px; }
+  nav ul li a {
+    text-decoration:none;
+    color: var(--muted);
+    font-size: .9rem;
+    font-weight: 500;
+    transition: color .2s;
+  }
+  nav ul li a:hover, nav ul li a.active { color: var(--gold); }
+
+  .btn-nav {
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    padding: 9px 22px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .btn-nav:hover { background: var(--gold-light); }
+
+  /* PAGES */
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* HERO */
+  .hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 90px 24px 60px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 65%);
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    line-height: 1.15;
+    max-width: 700px;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+
+  .hero-btns { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    padding: 13px 30px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: .95rem;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .3px;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 13px 30px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: .95rem;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* STATS */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0;
+    background: var(--card);
+  }
+  .stat {
+    flex: 1;
+    max-width: 200px;
+    text-align: center;
+    padding: 28px 20px;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label { font-size: .78rem; color: var(--muted); font-weight: 500; }
+
+  /* SERVICES */
+  .section {
+    padding: 72px 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+  .section-sub { color: var(--muted); font-size: .95rem; margin-bottom: 40px; }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .service-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    transition: border-color .2s, transform .2s;
+    cursor: pointer;
+  }
+  .service-card:hover { border-color: var(--gold); transform: translateY(-4px); }
+
+  .service-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(201,168,76,0.12);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+  }
+
+  .service-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .service-card p { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+
+  /* FORM */
+  .form-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .form-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+  }
+  .form-sub { color: var(--muted); font-size: .9rem; margin-bottom: 32px; }
+
+  .form-row { display: flex; gap: 16px; }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 18px;
+    flex: 1;
+  }
+
+  label { font-size: .82rem; font-weight: 600; color: #aaa; letter-spacing: .4px; }
+
+  input, select, textarea {
+    background: #1e1e1e;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .9rem;
+    outline: none;
+    transition: border-color .2s;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+  textarea { resize: vertical; min-height: 120px; }
+  select option { background: #1e1e1e; }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 8px;
+  }
+  .submit-btn:hover { background: var(--gold-light); }
+
+  /* DASHBOARD */
+  .dash-header {
+    padding: 40px 48px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .dash-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+  }
+  .dash-header p { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
+
+  .dash-tabs { display:flex; gap:0; flex-wrap:wrap; }
+  .dash-tab {
+    padding: 10px 22px;
+    font-size: .88rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    transition: all .2s;
+    background: none;
+    border-top: none; border-left: none; border-right: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .dash-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .dash-body { padding: 0 48px 48px; }
+
+  /* KPI CARDS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 20px;
+  }
+  .kpi-label { font-size: .75rem; color: var(--muted); font-weight: 600; letter-spacing: .4px; margin-bottom: 10px; text-transform: uppercase; }
+  .kpi-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .kpi-change { font-size: .78rem; font-weight: 600; }
+  .kpi-change.up { color: var(--success); }
+  .kpi-change.down { color: var(--danger); }
+  .kpi-change.neu { color: var(--muted); }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .table-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-head h3 { font-size: .95rem; font-weight: 600; }
+  .table-head span { font-size: .8rem; color: var(--muted); }
+
+  .filter-row {
+    display: flex;
+    gap: 10px;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .filter-row input, .filter-row select {
+    max-width: 200px;
+    padding: 7px 12px;
+    font-size: .82rem;
+  }
+
+  table { width:100%; border-collapse:collapse; }
+  thead tr { background: #1a1a1a; }
+  th {
+    padding: 12px 16px;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-align: left;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+  }
+  th:hover { color: var(--gold); }
+  td {
+    padding: 13px 16px;
+    font-size: .84rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(201,168,76,0.03); }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: .72rem;
+    font-weight: 700;
+  }
+  .badge-pending { background: rgba(201,168,76,0.15); color: var(--gold); }
+  .badge-done { background: rgba(82,201,127,0.15); color: var(--success); }
+  .badge-process { background: rgba(82,150,201,0.15); color: var(--info); }
+  .badge-cancel { background: rgba(224,82,82,0.15); color: var(--danger); }
+  .badge-gratis { background: rgba(76,175,80,0.15); color: #4CAF50; }
+
+  /* ACTION BUTTONS */
+  .action-btns { display:flex; gap:6px; }
+  .btn-sm {
+    padding: 5px 12px;
+    border-radius: 5px;
+    font-size: .75rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: all .15s;
+  }
+  .btn-view { background: rgba(82,150,201,0.15); color: var(--info); }
+  .btn-view:hover { background: rgba(82,150,201,0.3); }
+  .btn-done { background: rgba(82,201,127,0.15); color: var(--success); }
+  .btn-done:hover { background: rgba(82,201,127,0.3); }
+  .btn-del { background: rgba(224,82,82,0.15); color: var(--danger); }
+  .btn-del:hover { background: rgba(224,82,82,0.3); }
+
+  /* CHARTS AREA */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+
+  .chart-card h3 { font-size: .9rem; font-weight: 600; margin-bottom: 18px; color: #ccc; }
+
+  .bar-chart { display:flex; align-items:flex-end; gap:10px; height:120px; }
+  .bar-group { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
+  .bar {
+    width: 100%;
+    background: var(--gold);
+    border-radius: 4px 4px 0 0;
+    min-height: 4px;
+    transition: opacity .2s;
+  }
+  .bar:hover { opacity: .75; }
+  .bar-label { font-size: .68rem; color: var(--muted); }
+
+  .donut-wrap { display:flex; align-items:center; gap:24px; }
+  .donut-svg { flex-shrink:0; }
+  .legend { display:flex; flex-direction:column; gap:10px; }
+  .legend-item { display:flex; align-items:center; gap:8px; font-size: .8rem; }
+  .legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+  /* EXPORT BTN */
+  .export-btn {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    padding: 8px 20px;
+    border-radius: 7px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .export-btn:hover { background: rgba(201,168,76,0.2); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    max-width: 520px;
+    width: 92%;
+    position: relative;
+  }
+  .modal h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: var(--gold);
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 20px;
+    background: none; border: none;
+    color: var(--muted); font-size: 1.4rem;
+    cursor: pointer;
+  }
+  .detail-row { display:flex; gap:12px; margin-bottom: 12px; }
+  .detail-label { font-size: .78rem; font-weight: 600; color: var(--muted); min-width: 110px; }
+  .detail-value { font-size: .88rem; color: var(--text); }
+
+  .toast {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    background: var(--success);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: .88rem;
+    z-index: 9999;
+    display: none;
+    animation: slideUp .3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity:0; }
+    to { transform: translateY(0); opacity:1; }
+  }
+
+  /* PEMBAYARAN */
+  .pay-layout { max-width:900px; margin:0 auto; padding:48px 24px; }
+  .pay-title { font-family:'Playfair Display',serif; font-size:2rem; margin-bottom:6px; }
+  .pay-sub { color:var(--muted); font-size:.92rem; margin-bottom:36px; }
+  .paket-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:36px; }
+  .paket-card { background:var(--card); border:1.5px solid var(--border); border-radius:14px; padding:24px 20px; cursor:pointer; transition:all .2s; position:relative; }
+  .paket-card:hover { border-color:var(--gold); transform:translateY(-3px); }
+  .paket-card.selected { border-color:var(--gold); background:rgba(201,168,76,0.06); }
+  .paket-badge { position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:var(--gold); color:var(--dark); font-size:.68rem; font-weight:700; padding:3px 12px; border-radius:20px; letter-spacing:.5px; white-space:nowrap; }
+  .paket-icon { font-size:1.8rem; margin-bottom:10px; }
+  .paket-name { font-family:'Playfair Display',serif; font-size:1.05rem; margin-bottom:4px; }
+  .paket-desc { font-size:.78rem; color:var(--muted); margin-bottom:14px; line-height:1.5; }
+  .paket-price { font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--gold); font-weight:700; }
+  .paket-price span { font-size:.78rem; color:var(--muted); font-weight:400; font-family:'DM Sans',sans-serif; }
+  .metode-section { margin-bottom:32px; }
+  .metode-label { font-size:.82rem; font-weight:700; color:#aaa; letter-spacing:.5px; margin-bottom:14px; }
+  .metode-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .metode-card { background:var(--card); border:1.5px solid var(--border); border-radius:12px; padding:16px 14px; cursor:pointer; transition:all .2s; text-align:center; }
+  .metode-card:hover { border-color:var(--gold); }
+  .metode-card.selected { border-color:var(--gold); background:rgba(201,168,76,0.06); }
+  .metode-logo { font-size:1.6rem; margin-bottom:6px; }
+  .metode-logo svg { display:block; margin:0 auto; border-radius:8px; }
+  .metode-group-label {
+    font-size:.75rem;
+    font-weight:700;
+    color:var(--muted);
+    letter-spacing:.8px;
+    text-transform:uppercase;
+    margin-bottom:10px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--border);
+  }
+  .metode-name { font-size:.8rem; font-weight:600; color:var(--text); }
+  .metode-type { font-size:.7rem; color:var(--muted); margin-top:2px; }
+  .pay-detail-box { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:28px; margin-bottom:24px; display:none; }
+  .pay-detail-box.show { display:block; }
+  .pay-detail-title { font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--gold); margin-bottom:20px; }
+  .pay-info-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); font-size:.88rem; }
+  .pay-info-row:last-of-type { border-bottom:none; }
+  .pay-info-label { color:var(--muted); }
+  .pay-info-value { font-weight:600; color:var(--text); }
+  .pay-info-value.gold { color:var(--gold); }
+  .qris-box { text-align:center; padding:20px 0 8px; }
+  .qris-frame { display:inline-block; background:#fff; padding:16px; border-radius:12px; margin-bottom:10px; }
+  .qris-note { font-size:.8rem; color:var(--muted); }
+  .rekening-box { margin-top:12px; }
+  .rek-item { background:#1e1e1e; border:1px solid var(--border); border-radius:10px; padding:14px 18px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .rek-bank { font-weight:700; font-size:.92rem; color:var(--gold); }
+  .rek-num { font-family:monospace; font-size:1rem; color:var(--text); letter-spacing:2px; margin:2px 0; }
+  .rek-name { font-size:.78rem; color:var(--muted); }
+  .copy-btn { background:rgba(201,168,76,0.12); border:1px solid rgba(201,168,76,0.3); color:var(--gold); padding:6px 14px; border-radius:7px; font-size:.75rem; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s; white-space:nowrap; }
+  .copy-btn:hover { background:rgba(201,168,76,0.25); }
+  .pay-summary { background:rgba(201,168,76,0.06); border:1px solid rgba(201,168,76,0.2); border-radius:12px; padding:18px 22px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; }
+  .pay-summary-label { font-size:.85rem; color:var(--muted); }
+  .pay-summary-total { font-family:'Playfair Display',serif; font-size:1.6rem; color:var(--gold); font-weight:700; }
+  .pay-confirm-btn { width:100%; background:var(--gold); color:var(--dark); border:none; padding:15px; border-radius:10px; font-family:'DM Sans',sans-serif; font-weight:700; font-size:1rem; cursor:pointer; transition:all .2s; margin-top:4px; }
+  .pay-confirm-btn:hover { background:var(--gold-light); transform:translateY(-2px); }
+  .pay-confirm-btn:disabled { background:#444; color:#888; cursor:not-allowed; transform:none; }
+  .pay-success { text-align:center; padding:48px 24px; display:none; }
+  .pay-success.show { display:block; }
+  .pay-success-icon { font-size:4rem; margin-bottom:16px; }
+  .pay-success h2 { font-family:'Playfair Display',serif; font-size:1.8rem; color:var(--success); margin-bottom:8px; }
+  .pay-success p { color:var(--muted); font-size:.95rem; margin-bottom:24px; }
+
+  /* CHAT */
+  .chat-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    height: calc(100vh - 180px);
+    min-height: 500px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--card);
+  }
+
+  .chat-sidebar {
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: #111;
+  }
+
+  .chat-sidebar-header {
+    padding: 18px 16px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+
+  .chat-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .chat-list-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+    position: relative;
+  }
+  .chat-list-item:hover { background: rgba(201,168,76,0.05); }
+  .chat-list-item.active { background: rgba(201,168,76,0.10); border-left: 3px solid var(--gold); }
+
+  .chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #8a6820);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--dark);
+    flex-shrink: 0;
+  }
+
+  .chat-item-info { flex: 1; min-width: 0; }
+  .chat-item-name { font-size: .85rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chat-item-preview { font-size: .74rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .chat-item-time { font-size: .68rem; color: var(--muted); flex-shrink: 0; align-self: flex-start; margin-top: 2px; }
+
+  .chat-unread {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: var(--gold);
+    color: var(--dark);
+    font-size: .65rem;
+    font-weight: 800;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chat-main {
+    display: flex;
+    flex-direction: column;
+    background: var(--darker);
+  }
+
+  .chat-topbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+  }
+
+  .chat-topbar-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #8a6820);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .9rem;
+    color: var(--dark);
+  }
+
+  .chat-topbar-info { flex: 1; }
+  .chat-topbar-name { font-size: .9rem; font-weight: 700; color: var(--text); }
+  .chat-topbar-status { font-size: .74rem; color: var(--success); }
+
+  .chat-topbar-badge {
+    background: rgba(82,150,201,0.15);
+    color: var(--info);
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .chat-msg {
+    display: flex;
+    gap: 10px;
+    max-width: 70%;
+  }
+  .chat-msg.msg-admin { align-self: flex-end; flex-direction: row-reverse; }
+  .chat-msg.msg-client { align-self: flex-start; }
+
+  .msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    align-self: flex-end;
+  }
+  .msg-avatar.av-admin { background: linear-gradient(135deg, var(--gold), #8a6820); color: var(--dark); }
+  .msg-avatar.av-client { background: #2a2a2a; color: var(--muted); }
+
+  .msg-bubble {
+    padding: 11px 15px;
+    border-radius: 16px;
+    font-size: .86rem;
+    line-height: 1.6;
+    max-width: 100%;
+  }
+  .msg-bubble.bubble-admin {
+    background: var(--gold);
+    color: var(--dark);
+    border-bottom-right-radius: 4px;
+    font-weight: 500;
+  }
+  .msg-bubble.bubble-client {
+    background: #1e1e1e;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg-time {
+    font-size: .68rem;
+    color: var(--muted);
+    margin-top: 4px;
+    text-align: right;
+  }
+  .chat-msg.msg-client .msg-time { text-align: left; }
+
+  .msg-wrap { display: flex; flex-direction: column; }
+
+  .chat-date-divider {
+    text-align: center;
+    font-size: .72rem;
+    color: var(--muted);
+    margin: 6px 0;
+    position: relative;
+  }
+  .chat-date-divider::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 50%;
+    height: 1px;
+    background: var(--border);
+  }
+  .chat-date-divider span { background: var(--darker); position: relative; padding: 0 12px; }
+
+  .chat-inputbar {
+    display: flex;
+    gap: 10px;
+    padding: 16px 22px;
+    border-top: 1px solid var(--border);
+    background: var(--card);
+    align-items: flex-end;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: #1e1e1e;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 16px;
+    border-radius: 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem;
+    resize: none;
+    outline: none;
+    min-height: 44px;
+    max-height: 120px;
+    line-height: 1.5;
+    transition: border-color .2s;
+  }
+  .chat-input:focus { border-color: var(--gold); }
+
+  .chat-send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+    flex-shrink: 0;
+  }
+  .chat-send-btn:hover { background: var(--gold-light); transform: scale(1.08); }
+
+  .chat-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    gap: 12px;
+  }
+  .chat-empty-icon { font-size: 3rem; }
+  .chat-empty p { font-size: .9rem; }
+
+  /* FLOATING CHAT WIDGET (Client) */
+  .chat-float-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    cursor: pointer;
+    font-size: 1.4rem;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(201,168,76,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .25s;
+  }
+  .chat-float-btn:hover { transform: scale(1.1); background: var(--gold-light); }
+  .chat-float-btn .chat-float-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--danger);
+    color: #fff;
+    font-size: .6rem;
+    font-weight: 800;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--darker);
+  }
+
+  .chat-float-panel {
+    position: fixed;
+    bottom: 96px;
+    right: 28px;
+    width: 360px;
+    height: 520px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.95) translateY(10px);
+    opacity: 0;
+    transition: all .25s cubic-bezier(.4,0,.2,1);
+  }
+  .chat-float-panel.open {
+    display: flex;
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  .float-panel-header {
+    background: linear-gradient(135deg, #1a1400, #2a2000);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .float-panel-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+  .float-panel-title { flex: 1; }
+  .float-panel-title strong { display: block; font-size: .92rem; color: var(--text); }
+  .float-panel-title span { font-size: .74rem; color: var(--success); }
+  .float-close-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .float-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .float-msg { display: flex; flex-direction: column; max-width: 80%; }
+  .float-msg.msg-me { align-self: flex-end; align-items: flex-end; }
+  .float-msg.msg-them { align-self: flex-start; align-items: flex-start; }
+
+  .float-bubble {
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: .84rem;
+    line-height: 1.55;
+  }
+  .float-bubble.bubble-me {
+    background: var(--gold);
+    color: var(--dark);
+    font-weight: 500;
+    border-bottom-right-radius: 4px;
+  }
+  .float-bubble.bubble-them {
+    background: #1e1e1e;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+  .float-time { font-size: .65rem; color: var(--muted); margin-top: 3px; padding: 0 2px; }
+
+  .float-input-row {
+    display: flex;
+    gap: 8px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--border);
+    background: #111;
+    align-items: flex-end;
+  }
+  .float-input {
+    flex: 1;
+    background: #1e1e1e;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 14px;
+    border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .84rem;
+    resize: none;
+    outline: none;
+    min-height: 38px;
+    max-height: 100px;
+    line-height: 1.4;
+    transition: border-color .2s;
+  }
+  .float-input:focus { border-color: var(--gold); }
+  .float-send {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all .2s;
+  }
+  .float-send:hover { background: var(--gold-light); }
+
+  /* RESPONSIVE */
+  @media(max-width:768px) {
+    nav { padding: 14px 20px; }
+    nav ul { display:none; }
+    .section { padding: 40px 20px; }
+    .dash-header, .dash-body { padding-left: 20px; padding-right: 20px; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .charts-row { grid-template-columns: 1fr; }
+    .form-row { flex-direction: column; }
+    .form-section { padding: 28px 20px; }
+    .stats { flex-wrap: wrap; }
+    table { font-size: .75rem; }
+    .paket-grid { grid-template-columns: 1fr; }
+    .metode-grid { grid-template-columns: repeat(2,1fr); }
+  }
+
+/* === LOGIN PAGE === */
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.login-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 44px 40px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+}
+.login-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: var(--gold);
+  margin-bottom: 4px;
+}
+.login-logo span { color: var(--text); }
+.login-sub { color: var(--muted); font-size: .85rem; margin-bottom: 28px; }
+.login-card .form-group { text-align: left; }
+.login-error {
+  display: none;
+  background: rgba(224,82,82,0.12);
+  border: 1px solid rgba(224,82,82,0.3);
+  color: var(--danger);
+  font-size: .82rem;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+.login-error.show { display: block; }
+.login-note {
+  margin-top: 22px;
+  font-size: .74rem;
+  color: var(--muted);
+  line-height: 1.6;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+/* === ADMIN TOPBAR === */
+.admin-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 48px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(13,13,13,0.95);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.admin-badge {
+  background: rgba(201,168,76,0.12);
+  border: 1px solid rgba(201,168,76,0.3);
+  color: var(--gold);
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 12px;
+  border-radius: 14px;
+  margin-left: 12px;
+}
+.btn-logout {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: .85rem;
+  cursor: pointer;
+  transition: all .2s;
+}
+.btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+@media(max-width:768px) {
+  .admin-topbar { padding: 14px 20px; }
+  .login-card { padding: 32px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Data berhasil disimpan!</div>
+
+<!-- ===================== LOGIN PAGE ===================== -->
+<div class="login-wrap" id="loginPage">
+  <div class="login-card">
+    <div class="login-logo">Alifah<span>LawFirm</span></div>
+    <div class="login-sub">⚖️ Admin Panel — Login Internal</div>
+
+    <div class="login-error" id="loginError">⚠️ Username atau password salah.</div>
+
+    <div class="form-group">
+      <label>USERNAME</label>
+      <input type="text" id="loginUser" placeholder="admin" autocomplete="username"
+        onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <div class="form-group">
+      <label>PASSWORD</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+    <button class="submit-btn" onclick="doLogin()">🔐 Masuk ke Dashboard</button>
+
+    <div class="login-note">
+      Halaman ini hanya untuk staf internal AlifahLawFirm.<br>
+      Jangan bagikan tautan & kredensial halaman ini ke pihak luar.
+    </div>
+  </div>
+</div>
+
+<!-- ===================== ADMIN APP ===================== -->
+<div id="adminApp" style="display:none">
+
+  <!-- TOPBAR -->
+  <div class="admin-topbar">
+    <div style="display:flex;align-items:center;">
+      <div class="logo">Alifah<span>LawFirm</span></div>
+      <div class="admin-badge">Admin Panel</div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">🚪 Keluar</button>
+  </div>
+
+  <!-- MODAL DETAIL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h3>Detail Konsultasi</h3>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- LAPORAN / DASHBOARD PAGE -->
+  <div class="page active" id="page-laporan">
+    <div class="dash-header">
+      <h2>Dashboard Laporan</h2>
+      <p>Pantau dan kelola semua data konsultasi hukum klien</p>
+      <div class="dash-tabs">
+        <button class="dash-tab active" onclick="switchTab('overview',this)">Overview</button>
+        <button class="dash-tab" onclick="switchTab('data',this)">Data Konsultasi</button>
+        <button class="dash-tab" onclick="switchTab('pembayaran',this)">💳 Pembayaran <span id="payBadgeTab" style="display:none;background:var(--gold);color:var(--dark);font-size:.65rem;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:4px;vertical-align:middle"></span></button>
+        <button class="dash-tab" id="chatTabBtn" onclick="switchTab('chat',this)">💬 Chat Konsultasi <span id="chatBadgeTab" style="display:none;background:var(--gold);color:var(--dark);font-size:.65rem;font-weight:800;padding:1px 6px;border-radius:10px;margin-left:4px;vertical-align:middle"></span></button>
+      </div>
+    </div>
+
+    <div class="dash-body">
+
+      <!-- OVERVIEW TAB -->
+      <div id="tab-overview">
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Total Konsultasi</div>
+            <div class="kpi-value" id="kpiTotal">0</div>
+            <div class="kpi-change neu">All time</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Selesai</div>
+            <div class="kpi-value" id="kpiDone">0</div>
+            <div class="kpi-change up" id="kpiDonePct">0%</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Diproses</div>
+            <div class="kpi-value" id="kpiProcess">0</div>
+            <div class="kpi-change neu">aktif</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Menunggu</div>
+            <div class="kpi-value" id="kpiWait">0</div>
+            <div class="kpi-change down">pending</div>
+          </div>
+        </div>
+
+        <div class="charts-row">
+          <div class="chart-card">
+            <h3>Konsultasi per Bulan (6 Bulan Terakhir)</h3>
+            <div class="bar-chart" id="barChart"></div>
+          </div>
+          <div class="chart-card">
+            <h3>Distribusi Bidang Hukum</h3>
+            <div class="donut-wrap">
+              <svg class="donut-svg" width="120" height="120" viewBox="0 0 120 120" id="donutSvg"></svg>
+              <div class="legend" id="donutLegend"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DATA TAB -->
+      <div id="tab-data" style="display:none">
+        <div class="table-wrap">
+          <div class="table-head">
+            <h3>Daftar Konsultasi</h3>
+            <div style="display:flex;gap:8px">
+              <button class="export-btn" onclick="hapusSelesai()" title="Hapus semua konsultasi berstatus Selesai">🧹 Hapus yang Selesai</button>
+              <button class="export-btn" onclick="exportCSV()">⬇ Export CSV</button>
+            </div>
+          </div>
+          <div class="filter-row">
+            <input type="text" id="searchInput" placeholder="🔍 Cari nama / email..." oninput="renderTable()">
+            <select id="filterStatus" onchange="renderTable()">
+              <option value="">Semua Status</option>
+              <option>Menunggu</option>
+              <option>Diproses</option>
+              <option>Selesai</option>
+              <option>Dibatalkan</option>
+            </select>
+            <select id="filterBidang" onchange="renderTable()">
+              <option value="">Semua Bidang</option>
+              <option>Hukum Perdata</option>
+              <option>Hukum Pidana</option>
+              <option>Hukum Bisnis</option>
+              <option>Hukum Keluarga</option>
+              <option>Hukum Administrasi</option>
+              <option>HKI</option>
+              <option>Lainnya</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto">
+            <table id="konsulTable">
+              <thead>
+                <tr>
+                  <th onclick="sortTable('id')">#</th>
+                  <th onclick="sortTable('nama')">Nama</th>
+                  <th onclick="sortTable('bidang')">Bidang</th>
+                  <th onclick="sortTable('urgensi')">Urgensi</th>
+                  <th onclick="sortTable('status')">Status</th>
+                  <th onclick="sortTable('tanggal')">Tanggal</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+          <div id="tableInfo" style="padding:12px 16px; font-size:.78rem; color:var(--muted); border-top:1px solid var(--border)"></div>
+        </div>
+      </div>
+
+      <!-- PEMBAYARAN TAB -->
+      <div id="tab-pembayaran" style="display:none">
+        <div class="table-wrap">
+          <div class="table-head">
+            <h3>Riwayat Pembayaran & Pengajuan Gratis</h3>
+            <div style="display:flex;gap:8px">
+              <button class="export-btn" onclick="hapusSemuaPembayaran()" title="Hapus seluruh riwayat pembayaran">🧹 Bersihkan Riwayat</button>
+              <button class="export-btn" onclick="exportPaymentCSV()">⬇ Export CSV</button>
+            </div>
+          </div>
+          <div class="filter-row">
+            <input type="text" id="paySearchInput" placeholder="🔍 Cari nama / kode..." oninput="renderPaymentTable()">
+            <select id="payFilterStatus" onchange="renderPaymentTable()">
+              <option value="">Semua Status</option>
+              <option>Menunggu Verifikasi</option>
+              <option>Lunas</option>
+              <option>Pengajuan Gratis</option>
+              <option>Disetujui</option>
+              <option>Ditolak</option>
+            </select>
+          </div>
+          <div style="overflow-x:auto">
+            <table id="payTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Klien</th>
+                  <th>Paket</th>
+                  <th>Metode</th>
+                  <th>Jumlah</th>
+                  <th>Kode</th>
+                  <th>Bukti</th>
+                  <th>Status</th>
+                  <th>Tanggal</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="payTableBody"></tbody>
+            </table>
+          </div>
+          <div id="payTableInfo" style="padding:12px 16px; font-size:.78rem; color:var(--muted); border-top:1px solid var(--border)"></div>
+        </div>
+      </div>
+
+      <!-- CHAT TAB -->
+      <div id="tab-chat" style="display:none">
+        <div class="chat-layout">
+          <!-- Sidebar: daftar klien -->
+          <div class="chat-sidebar">
+            <div class="chat-sidebar-header" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <span>💬 Percakapan Klien <span id="adminChatCount" style="color:var(--gold);font-weight:800"></span></span>
+              <div style="display:flex;gap:6px">
+                <button class="export-btn" style="padding:3px 10px;font-size:.68rem" onclick="renderAdminChatList();showToast('🔄 Daftar chat diperbarui')" title="Muat ulang daftar percakapan">🔄</button>
+                <button class="export-btn" style="padding:3px 10px;font-size:.68rem" onclick="hapusSemuaChat()" title="Hapus semua percakapan">🧹</button>
+              </div>
+            </div>
+            <div class="chat-list" id="adminChatList">
+              <div style="padding:32px 16px;text-align:center;color:var(--muted);font-size:.84rem">Belum ada percakapan masuk.</div>
+            </div>
+          </div>
+
+          <!-- Area chat utama -->
+          <div class="chat-main" style="display:flex;flex-direction:column;flex:1;min-height:0;">
+            <!-- Empty state -->
+            <div class="chat-empty" id="chatEmptyState" style="display:flex">
+              <div class="chat-empty-icon">💬</div>
+              <p>Pilih percakapan untuk mulai membalas</p>
+            </div>
+            <!-- Active chat area -->
+            <div id="chatActiveArea" style="display:none;flex-direction:column;flex:1;min-height:0;">
+              <div class="chat-topbar" id="chatTopbar"></div>
+              <div class="chat-messages" id="adminMessages" style="flex:1;overflow-y:auto;"></div>
+              <div class="chat-inputbar">
+                <textarea class="chat-input" id="adminInput" placeholder="Ketik balasan sebagai Admin..." rows="1"
+                  onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();adminSend()}"
+                  oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px'"></textarea>
+                <button class="chat-send-btn" onclick="adminSend()" title="Kirim Balasan">➤</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+// ===================== KONFIGURASI PENYIMPANAN BERSAMA =====================
+// PENTING: Kunci localStorage di bawah HARUS SAMA dengan yang dipakai di klien.html
+// agar data konsultasi & chat klien tersinkron ke Admin Panel ini.
+// Buka klien.html dan admin.html dari domain/origin yang sama (mis. lewat
+// web server lokal), bukan dengan double-click file terpisah, supaya
+// localStorage benar-benar dibagi antar keduanya.
+//
+// ===================== ⚠️ BATASAN PENTING: MULTI-KLIEN BERSAMAAN =====================
+// Sistem ini mendukung BANYAK percakapan klien sekaligus — semua chat yang masuk
+// akan tampil sebagai daftar terpisah di sidebar tab "Chat Konsultasi" (lengkap
+// dengan badge jumlah belum dibaca, diurutkan otomatis), dan admin bisa klik
+// satu per satu untuk membalas.
+//
+// Karena datanya disimpan di localStorage BROWSER (tanpa server), ada 1 catatan:
+// localStorage TIDAK dibagi antar device/HP yang berbeda. Jika klien membuka
+// klien.html dari HP-nya sendiri dan Admin membuka admin.html dari laptop yang
+// berbeda, chat klien tersebut TIDAK akan muncul di Admin (karena beda penyimpanan).
+// Untuk produksi sungguhan (chat lintas device real-time), sistem ini perlu
+// backend + database (server bersama).
+//
+// ✅ TESTING/DEMO multi-klien di SATU komputer (tanpa incognito):
+// - Buka admin.html di satu tab.
+// - Buka klien.html di tab lain -> ini "Klien #1".
+// - Buka tab BARU lagi (Ctrl/Cmd+T), buka klien.html lagi -> otomatis jadi
+//   "Klien #2" yang berbeda (ID klien disimpan per-tab via sessionStorage).
+// - Ulangi untuk Klien #3, #4, dst — setiap tab baru = klien baru.
+// - Setiap kali klien kirim chat, percakapan baru akan muncul di sidebar
+//   "Chat Konsultasi" admin (klik 🔄 untuk refresh instan jika perlu).
+const LS_DATA = 'alf_konsultasi_data';
+const LS_CHAT = 'alf_chat_store';
+const LS_PAY = 'alf_pembayaran_data';
+
+// ===================== AUTENTIKASI ADMIN (sederhana, front-end only) =====================
+// ⚠️ GANTI username & password di bawah ini sebelum digunakan!
+// Catatan keamanan: karena ini berjalan 100% di browser (tanpa server),
+// siapapun yang membuka "View Source" / DevTools bisa melihat nilai ini.
+// Login ini hanya mencegah pengunjung biasa membuka dashboard secara tidak
+// sengaja. Untuk keamanan data klien yang sesungguhnya (anti-bocor dari
+// "oknum"), gunakan backend + autentikasi server + database.
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'AlifahAdmin#2026';
+
+const SESSION_KEY = 'alf_admin_session';
+
+function doLogin() {
+  const u = document.getElementById('loginUser').value.trim();
+  const p = document.getElementById('loginPass').value;
+  const err = document.getElementById('loginError');
+
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    sessionStorage.setItem(SESSION_KEY, '1');
+    err.classList.remove('show');
+    enterAdmin();
+  } else {
+    err.classList.add('show');
+  }
+}
+
+function doLogout() {
+  sessionStorage.removeItem(SESSION_KEY);
+  document.getElementById('adminApp').style.display = 'none';
+  document.getElementById('loginPage').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+function enterAdmin() {
+  document.getElementById('loginPage').style.display = 'none';
+  document.getElementById('adminApp').style.display = 'block';
+  initAdminData();
+  updateDashboard();
+}
+
+// ===================== DATA STORE =====================
+let data = [];
+let payData = [];
+let sortKey = 'id', sortAsc = false;
+let paySortKey = 'id', paySortAsc = false;
+
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(LS_DATA) || '[]'); }
+  catch(e) { return []; }
+}
+function save() {
+  localStorage.setItem(LS_DATA, JSON.stringify(data));
+}
+function loadPayData() {
+  try { return JSON.parse(localStorage.getItem(LS_PAY) || '[]'); }
+  catch(e) { return []; }
+}
+function savePayData() {
+  localStorage.setItem(LS_PAY, JSON.stringify(payData));
+}
+
+// Isi data contoh HANYA jika belum ada data sama sekali (mode demo)
+function seedSampleData() {
+  const sampleNames = ['Budi Santoso','Siti Rahayu','Ahmad Fauzi','Dewi Lestari','Raka Wijaya','Nia Sari','Hendra Gunawan','Anisa Putri'];
+  const bidangList = ['Hukum Perdata','Hukum Pidana','Hukum Bisnis','Hukum Keluarga','Hukum Administrasi','HAKI'];
+  const statusList = ['Menunggu','Diproses','Selesai','Selesai','Selesai'];
+  const urgList = ['Normal (1–3 hari)','Segera (24 jam)','Darurat (hari ini)'];
+
+  for (let i = 0; i < 16; i++) {
+    const d = new Date(); d.setDate(d.getDate() - Math.floor(Math.random()*90));
+    data.push({
+      id: i + 1,
+      nama: sampleNames[i % sampleNames.length],
+      nik: '327' + Math.floor(Math.random() * 1e10).toString().padStart(10,'0'),
+      email: sampleNames[i % sampleNames.length].split(' ')[0].toLowerCase() + '@email.com',
+      telp: '0812' + Math.floor(Math.random() * 1e7).toString().padStart(7,'0'),
+      bidang: bidangList[Math.floor(Math.random() * bidangList.length)],
+      urgensi: urgList[Math.floor(Math.random() * urgList.length)],
+      alamat: 'Jakarta Selatan',
+      deskripsi: 'Permasalahan hukum terkait ' + bidangList[Math.floor(Math.random()*bidangList.length)].toLowerCase(),
+      status: statusList[Math.floor(Math.random() * statusList.length)],
+      tanggal: d.toISOString().split('T')[0]
+    });
+  }
+  save();
+}
+
+function initAdminData() {
+  data = loadData();
+  if (data.length === 0) {
+    seedSampleData(); // hapus baris ini jika tidak ingin data contoh
+  }
+  payData = loadPayData();
+  updatePayBadge();
+}
+
+// ===================== NAVIGASI TAB =====================
+function switchTab(tab, el) {
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-overview').style.display = tab === 'overview' ? 'block' : 'none';
+  document.getElementById('tab-data').style.display = tab === 'data' ? 'block' : 'none';
+  document.getElementById('tab-pembayaran').style.display = tab === 'pembayaran' ? 'block' : 'none';
+  document.getElementById('tab-chat').style.display = tab === 'chat' ? 'block' : 'none';
+  if (tab === 'data') renderTable();
+  if (tab === 'pembayaran') { renderPaymentTable(); updatePayBadge(true); }
+  if (tab === 'chat') renderAdminChatList();
+}
+
+// ===================== DASHBOARD =====================
+function updateDashboard() {
+  const total = data.length;
+  const done = data.filter(d => d.status === 'Selesai').length;
+  const proc = data.filter(d => d.status === 'Diproses').length;
+  const wait = data.filter(d => d.status === 'Menunggu').length;
+
+  document.getElementById('kpiTotal').textContent = total;
+  document.getElementById('kpiDone').textContent = done;
+  document.getElementById('kpiDonePct').textContent = total > 0 ? Math.round(done/total*100) + '% selesai' : '0%';
+  document.getElementById('kpiProcess').textContent = proc;
+  document.getElementById('kpiWait').textContent = wait;
+
+  renderBarChart();
+  renderDonut();
+  renderTable();
+  renderAdminChatList();
+  updateAdminChatBadge();
+}
+
+function renderBarChart() {
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(); d.setMonth(d.getMonth() - i);
+    months.push({ label: d.toLocaleString('id', {month:'short'}), key: d.toISOString().slice(0,7) });
+  }
+  const counts = months.map(m => data.filter(d => d.tanggal.startsWith(m.key)).length);
+  const max = Math.max(...counts, 1);
+
+  const bc = document.getElementById('barChart');
+  bc.innerHTML = counts.map((c, i) => `
+    <div class="bar-group">
+      <div class="bar" style="height:${Math.max((c/max)*100,4)}px" title="${c} konsultasi"></div>
+      <div class="bar-label">${months[i].label}</div>
+    </div>
+  `).join('');
+}
+
+function renderDonut() {
+  const bidangList = ['Hukum Perdata','Hukum Pidana','Hukum Bisnis','Hukum Keluarga','Hukum Administrasi','HAKI','Lainnya'];
+  const colors = ['#C9A84C','#52C97F','#5296C9','#C952A8','#E05252','#52C9C9','#888'];
+  const counts = bidangList.map(b => data.filter(d => d.bidang === b).length);
+  const total = counts.reduce((a,b)=>a+b,0) || 1;
+
+  let offset = 0;
+  const r = 45, cx = 60, cy = 60;
+  let paths = '';
+  counts.forEach((c, i) => {
+    if (c === 0) return;
+    const pct = c / total;
+    const angle = pct * 2 * Math.PI;
+    const x1 = cx + r * Math.sin(offset);
+    const y1 = cy - r * Math.cos(offset);
+    offset += angle;
+    const x2 = cx + r * Math.sin(offset);
+    const y2 = cy - r * Math.cos(offset);
+    const large = pct > 0.5 ? 1 : 0;
+    paths += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} Z" fill="${colors[i]}" opacity=".85"/>`;
+  });
+
+  document.getElementById('donutSvg').innerHTML = paths + `<circle cx="${cx}" cy="${cy}" r="22" fill="var(--card)"/>`;
+
+  document.getElementById('donutLegend').innerHTML = bidangList.map((b, i) => {
+    if (counts[i] === 0) return '';
+    return `<div class="legend-item"><div class="legend-dot" style="background:${colors[i]}"></div><span>${b} (${counts[i]})</span></div>`;
+  }).join('');
+}
+
+// ===================== TABEL DATA =====================
+function renderTable() {
+  const search = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const fStatus = document.getElementById('filterStatus')?.value || '';
+  const fBidang = document.getElementById('filterBidang')?.value || '';
+
+  let filtered = data.filter(d => {
+    const matchSearch = d.nama.toLowerCase().includes(search) || d.email.toLowerCase().includes(search);
+    const matchStatus = !fStatus || d.status === fStatus;
+    const matchBidang = !fBidang || d.bidang === fBidang;
+    return matchSearch && matchStatus && matchBidang;
+  });
+
+  filtered.sort((a, b) => {
+    let va = a[sortKey], vb = b[sortKey];
+    if (typeof va === 'string') va = va.toLowerCase();
+    if (typeof vb === 'string') vb = vb.toLowerCase();
+    return sortAsc ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+  });
+
+  const tbody = document.getElementById('tableBody');
+  tbody.innerHTML = filtered.map(d => {
+    const badgeClass = {Menunggu:'badge-pending', Diproses:'badge-process', Selesai:'badge-done', Dibatalkan:'badge-cancel'}[d.status] || 'badge-pending';
+    return `<tr>
+      <td>${d.id}</td>
+      <td><strong>${d.nama}</strong><br><small style="color:var(--muted)">${d.email}</small></td>
+      <td>${d.bidang}</td>
+      <td style="font-size:.78rem">${d.urgensi}</td>
+      <td><span class="badge ${badgeClass}">${d.status}</span></td>
+      <td>${d.tanggal}</td>
+      <td><div class="action-btns">
+        <button class="btn-sm btn-view" onclick="viewDetail(${d.id})">Detail</button>
+        <button class="btn-sm btn-done" onclick="setStatus(${d.id},'Selesai')">✓</button>
+        <button class="btn-sm btn-del" onclick="hapus(${d.id})">✕</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('tableInfo').textContent = `Menampilkan ${filtered.length} dari ${data.length} konsultasi`;
+}
+
+function sortTable(key) {
+  if (sortKey === key) sortAsc = !sortAsc;
+  else { sortKey = key; sortAsc = true; }
+  renderTable();
+}
+
+function setStatus(id, status) {
+  const idx = data.findIndex(d => d.id === id);
+  if (idx !== -1) { data[idx].status = status; save(); renderTable(); updateDashboard(); showToast('Status diperbarui'); }
+}
+
+function hapus(id) {
+  if (!confirm('Hapus data ini?')) return;
+  data = data.filter(d => d.id !== id);
+  save(); renderTable(); updateDashboard();
+}
+
+function hapusSelesai() {
+  const jumlah = data.filter(d => d.status === 'Selesai').length;
+  if (jumlah === 0) { showToast('Tidak ada konsultasi berstatus Selesai'); return; }
+  if (!confirm(`Hapus ${jumlah} konsultasi yang sudah Selesai? Tindakan ini tidak dapat dibatalkan.`)) return;
+  data = data.filter(d => d.status !== 'Selesai');
+  save(); renderTable(); updateDashboard();
+  showToast(`🗑️ ${jumlah} konsultasi selesai dihapus`);
+}
+
+function viewDetail(id) {
+  const d = data.find(x => x.id === id);
+  if (!d) return;
+  document.getElementById('modalContent').innerHTML = `
+    <div class="detail-row"><div class="detail-label">ID</div><div class="detail-value">#${d.id}</div></div>
+    <div class="detail-row"><div class="detail-label">Nama</div><div class="detail-value">${d.nama}</div></div>
+    <div class="detail-row"><div class="detail-label">NIK</div><div class="detail-value">${d.nik || '-'}</div></div>
+    <div class="detail-row"><div class="detail-label">Email</div><div class="detail-value">${d.email}</div></div>
+    <div class="detail-row"><div class="detail-label">Telepon</div><div class="detail-value">${d.telp}</div></div>
+    <div class="detail-row"><div class="detail-label">Bidang</div><div class="detail-value">${d.bidang}</div></div>
+    <div class="detail-row"><div class="detail-label">Urgensi</div><div class="detail-value">${d.urgensi}</div></div>
+    <div class="detail-row"><div class="detail-label">Status</div><div class="detail-value">${d.status}</div></div>
+    <div class="detail-row"><div class="detail-label">Alamat</div><div class="detail-value">${d.alamat || '-'}</div></div>
+    <div class="detail-row"><div class="detail-label">Tanggal</div><div class="detail-value">${d.tanggal}</div></div>
+    <div class="detail-row" style="flex-direction:column"><div class="detail-label">Deskripsi Masalah</div>
+    <div class="detail-value" style="margin-top:6px;line-height:1.6;padding:10px;background:#1e1e1e;border-radius:8px">${d.deskripsi}</div></div>
+    <div style="margin-top:16px;display:flex;gap:10px">
+      <button class="btn-sm btn-done" style="padding:8px 18px" onclick="setStatus(${d.id},'Selesai');closeModal()">Tandai Selesai</button>
+      <button class="btn-sm btn-view" style="padding:8px 18px" onclick="setStatus(${d.id},'Diproses');closeModal()">Set Diproses</button>
+    </div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ===================== EXPORT CSV =====================
+function exportCSV() {
+  const headers = ['ID','Nama','NIK','Email','Telepon','Bidang','Urgensi','Status','Alamat','Tanggal','Deskripsi'];
+  const rows = data.map(d => [d.id,d.nama,d.nik,d.email,d.telp,d.bidang,d.urgensi,d.status,d.alamat,d.tanggal,d.deskripsi?.replace(/,/g,' ')]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'laporan-konsultasi-' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  showToast('⬇ CSV berhasil diexport!');
+}
+
+// ===================== PEMBAYARAN =====================
+function formatRupiahAdmin(n) {
+  return 'Rp ' + Number(n || 0).toLocaleString('id-ID');
+}
+
+function payBadgeClass(status) {
+  return {
+    'Menunggu Verifikasi': 'badge-pending',
+    'Lunas': 'badge-done',
+    'Pengajuan Gratis': 'badge-gratis',
+    'Disetujui': 'badge-done',
+    'Ditolak': 'badge-cancel'
+  }[status] || 'badge-pending';
+}
+
+function updatePayBadge(viewed) {
+  const badge = document.getElementById('payBadgeTab');
+  const pending = payData.filter(p => p.status === 'Menunggu Verifikasi' || p.status === 'Pengajuan Gratis').length;
+  if (pending > 0 && !viewed) {
+    badge.style.display = 'inline-block';
+    badge.textContent = pending;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderPaymentTable() {
+  const search = (document.getElementById('paySearchInput')?.value || '').toLowerCase();
+  const fStatus = document.getElementById('payFilterStatus')?.value || '';
+
+  let filtered = payData.filter(p => {
+    const matchSearch = (p.nama||'').toLowerCase().includes(search) || (p.kode||'').toLowerCase().includes(search);
+    const matchStatus = !fStatus || p.status === fStatus;
+    return matchSearch && matchStatus;
+  });
+
+  filtered.sort((a, b) => {
+    let va = a[paySortKey], vb = b[paySortKey];
+    if (typeof va === 'string') va = va.toLowerCase();
+    if (typeof vb === 'string') vb = vb.toLowerCase();
+    return paySortAsc ? (va > vb ? 1 : -1) : (va < vb ? 1 : -1);
+  });
+
+  const tbody = document.getElementById('payTableBody');
+  if (filtered.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:24px">Belum ada data pembayaran.</td></tr>`;
+  } else {
+    tbody.innerHTML = filtered.map(p => {
+      const badgeClass = payBadgeClass(p.status);
+      const jumlah = p.harga > 0 ? formatRupiahAdmin(p.harga) : 'GRATIS';
+      const adaBukti = !!(p.bukti && p.bukti.dataUrl);
+      const buktiCol = p.harga > 0
+        ? (adaBukti ? '<span style="color:var(--success);font-weight:700">✓ Ada</span>' : '<span style="color:var(--danger);font-weight:700">✕ Belum</span>')
+        : '<span style="color:var(--muted)">-</span>';
+      let aksiBtns = '';
+      if (p.status === 'Menunggu Verifikasi') {
+        aksiBtns = adaBukti
+          ? `<button class="btn-sm btn-done" onclick="setPayStatus(${p.id},'Lunas')">✓ Lunas</button>`
+          : `<button class="btn-sm btn-done" disabled title="Klien belum upload bukti pembayaran" style="opacity:.4;cursor:not-allowed">✓ Lunas</button>`;
+      } else if (p.status === 'Pengajuan Gratis') {
+        aksiBtns = `<button class="btn-sm btn-done" onclick="setPayStatus(${p.id},'Disetujui')">✓ Setuju</button>
+                     <button class="btn-sm btn-del" onclick="setPayStatus(${p.id},'Ditolak')">✕ Tolak</button>`;
+      }
+      return `<tr>
+        <td>${p.id}</td>
+        <td><strong>${p.nama}</strong></td>
+        <td>${p.paket}</td>
+        <td style="font-size:.78rem">${p.metode}</td>
+        <td>${jumlah}</td>
+        <td style="font-family:monospace;font-size:.78rem">${p.kode}</td>
+        <td style="font-size:.78rem">${buktiCol}</td>
+        <td><span class="badge ${badgeClass}">${p.status}</span></td>
+        <td style="font-size:.78rem">${p.tanggal}</td>
+        <td><div class="action-btns">
+          <button class="btn-sm btn-view" onclick="viewPayDetail(${p.id})">Detail</button>
+          ${aksiBtns}
+          <button class="btn-sm btn-del" onclick="hapusPay(${p.id})">✕</button>
+        </div></td>
+      </tr>`;
+    }).join('');
+  }
+
+  document.getElementById('payTableInfo').textContent = `Menampilkan ${filtered.length} dari ${payData.length} transaksi`;
+}
+
+function hapusPay(id) {
+  if (!confirm('Hapus riwayat pembayaran ini?')) return;
+  payData = payData.filter(p => p.id !== id);
+  savePayData();
+  renderPaymentTable();
+  updatePayBadge(true);
+  showToast('🗑️ Riwayat pembayaran dihapus');
+}
+
+function hapusSemuaPembayaran() {
+  if (payData.length === 0) { showToast('Belum ada riwayat pembayaran'); return; }
+  if (!confirm(`Hapus SEMUA ${payData.length} riwayat pembayaran & pengajuan gratis? Tindakan ini tidak dapat dibatalkan.`)) return;
+  payData = [];
+  savePayData();
+  renderPaymentTable();
+  updatePayBadge(true);
+  showToast('🗑️ Semua riwayat pembayaran dihapus');
+}
+
+function setPayStatus(id, status) {
+  const idx = payData.findIndex(p => p.id === id);
+  if (idx !== -1) {
+    if (status === 'Lunas' && payData[idx].harga > 0 && !(payData[idx].bukti && payData[idx].bukti.dataUrl)) {
+      showToast('⚠️ Klien belum mengunggah bukti pembayaran!');
+      return;
+    }
+    payData[idx].status = status;
+    if (status === 'Ditolak') payData[idx].notifRead = false;
+    savePayData();
+    renderPaymentTable();
+    updatePayBadge(true);
+    showToast('Status pembayaran diperbarui: ' + status);
+  }
+}
+
+function viewPayDetail(id) {
+  const p = payData.find(x => x.id === id);
+  if (!p) return;
+  let bukti = '';
+  if (p.bukti && p.bukti.dataUrl) {
+    if (p.bukti.type && p.bukti.type.startsWith('image/')) {
+      bukti = `
+    <div class="detail-row" style="flex-direction:column"><div class="detail-label">Bukti Pembayaran</div>
+    <div class="detail-value" style="margin-top:8px">
+      <a href="${p.bukti.dataUrl}" target="_blank" title="Klik untuk perbesar">
+        <img src="${p.bukti.dataUrl}" alt="Bukti pembayaran" style="max-width:100%;max-height:320px;border-radius:8px;border:1px solid var(--border);display:block">
+      </a>
+    </div></div>`;
+    } else {
+      bukti = `
+    <div class="detail-row"><div class="detail-label">Bukti Pembayaran</div><div class="detail-value">
+      <a href="${p.bukti.dataUrl}" download="${escapeHtml(p.bukti.name || 'bukti')}" style="color:var(--gold);font-weight:600">📄 ${escapeHtml(p.bukti.name || 'Lihat / Unduh File')}</a>
+    </div></div>`;
+    }
+  } else if (p.status === 'Menunggu Verifikasi') {
+    bukti = `
+    <div class="detail-row"><div class="detail-label">Bukti Pembayaran</div><div class="detail-value" style="color:var(--danger)">⚠️ Belum ada bukti diunggah</div></div>`;
+  }
+  let extra = '';
+  if (p.kategori) {
+    extra = `
+    <div class="detail-row"><div class="detail-label">Kategori</div><div class="detail-value">${p.kategori}</div></div>
+    <div class="detail-row" style="flex-direction:column"><div class="detail-label">Alasan / Kondisi</div>
+    <div class="detail-value" style="margin-top:6px;line-height:1.6;padding:10px;background:#1e1e1e;border-radius:8px">${p.alasan || '-'}</div></div>
+    <div class="detail-row"><div class="detail-label">Dokumen Pendukung</div><div class="detail-value">${p.dokumen || '-'}</div></div>`;
+  }
+  let aksi = '';
+  if (p.status === 'Menunggu Verifikasi') {
+    const adaBuktiModal = !!(p.bukti && p.bukti.dataUrl);
+    aksi = adaBuktiModal
+      ? `<button class="btn-sm btn-done" style="padding:8px 18px" onclick="setPayStatus(${p.id},'Lunas');closeModal()">Tandai Lunas</button>`
+      : `<button class="btn-sm btn-done" style="padding:8px 18px;opacity:.4;cursor:not-allowed" disabled title="Klien belum upload bukti pembayaran">Tandai Lunas</button>`;
+  } else if (p.status === 'Pengajuan Gratis') {
+    aksi = `<button class="btn-sm btn-done" style="padding:8px 18px" onclick="setPayStatus(${p.id},'Disetujui');closeModal()">Setujui Pengajuan</button>
+            <button class="btn-sm btn-del" style="padding:8px 18px" onclick="setPayStatus(${p.id},'Ditolak');closeModal()">Tolak Pengajuan</button>`;
+  }
+  document.getElementById('modalContent').innerHTML = `
+    <div class="detail-row"><div class="detail-label">ID</div><div class="detail-value">#${p.id}</div></div>
+    <div class="detail-row"><div class="detail-label">Klien</div><div class="detail-value">${p.nama}</div></div>
+    <div class="detail-row"><div class="detail-label">Paket</div><div class="detail-value">${p.paket}</div></div>
+    <div class="detail-row"><div class="detail-label">Metode</div><div class="detail-value">${p.metode}</div></div>
+    <div class="detail-row"><div class="detail-label">Jumlah</div><div class="detail-value">${p.harga > 0 ? formatRupiahAdmin(p.harga) : 'GRATIS'}</div></div>
+    <div class="detail-row"><div class="detail-label">Kode</div><div class="detail-value">${p.kode}</div></div>
+    <div class="detail-row"><div class="detail-label">Status</div><div class="detail-value">${p.status}</div></div>
+    <div class="detail-row"><div class="detail-label">Tanggal</div><div class="detail-value">${p.tanggal}</div></div>
+    ${bukti}
+    ${extra}
+    <div style="margin-top:16px;display:flex;gap:10px">${aksi}</div>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function exportPaymentCSV() {
+  const headers = ['ID','Klien','Paket','Metode','Jumlah','Kode','Status','Tanggal'];
+  const rows = payData.map(p => [p.id, p.nama, p.paket, p.metode, p.harga, p.kode, p.status, p.tanggal?.replace(/,/g,' ')]);
+  const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'laporan-pembayaran-' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  showToast('⬇ CSV berhasil diexport!');
+}
+
+// ===================== TOAST =====================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2800);
+}
+
+// ===================== CHAT (SISI ADMIN) =====================
+let chatStore = {};
+let activeChatId = null;
+
+function loadChat() {
+  try { return JSON.parse(localStorage.getItem(LS_CHAT) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveChat() {
+  localStorage.setItem(LS_CHAT, JSON.stringify(chatStore));
+}
+
+function nowTime() {
+  return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+}
+function nowFull() {
+  return new Date().toLocaleString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderAdminChatList() {
+  chatStore = loadChat();
+  const list = document.getElementById('adminChatList');
+  const countEl = document.getElementById('adminChatCount');
+  let ids = Object.keys(chatStore);
+
+  if (countEl) countEl.textContent = ids.length > 0 ? `(${ids.length})` : '';
+
+  if (ids.length === 0) {
+    list.innerHTML = '<div style="padding:32px 16px;text-align:center;color:var(--muted);font-size:.84rem">Belum ada percakapan masuk.</div>';
+    return;
+  }
+
+  // Urutkan: yang ada pesan belum dibaca admin di atas, lalu berdasarkan pesan terakhir terbaru
+  ids.sort((a, b) => {
+    const ca = chatStore[a], cb = chatStore[b];
+    const ua = ca.unreadAdmin || 0, ub = cb.unreadAdmin || 0;
+    if (ua !== ub) return ub - ua;
+    const ta = ca.messages?.[ca.messages.length - 1]?.timeFull || '';
+    const tb = cb.messages?.[cb.messages.length - 1]?.timeFull || '';
+    return tb.localeCompare(ta);
+  });
+
+  list.innerHTML = '';
+  ids.forEach(id => {
+    const c = chatStore[id];
+    const lastMsg = c.messages[c.messages.length - 1];
+    const initials = (c.name || 'K').split(' ').map(w => w[0]).join('').substr(0,2).toUpperCase();
+    const div = document.createElement('div');
+    div.className = 'chat-list-item' + (activeChatId === id ? ' active' : '');
+    div.onclick = () => openAdminChat(id);
+    div.innerHTML = `
+      <div class="chat-avatar">${initials}</div>
+      <div class="chat-item-info">
+        <div class="chat-item-name">${escapeHtml(c.name)}</div>
+        <div class="chat-item-preview">${lastMsg ? escapeHtml(lastMsg.text) : ''}</div>
+      </div>
+      <div class="chat-item-time">${lastMsg ? lastMsg.time : ''}</div>
+      ${c.unreadAdmin > 0 ? `<div class="chat-unread">${c.unreadAdmin}</div>` : ''}
+      <button class="btn-sm btn-del" style="position:absolute;bottom:10px;right:10px;padding:3px 8px;font-size:.68rem" onclick="event.stopPropagation();hapusChat('${id}')">✕</button>`;
+    div.style.position = 'relative';
+    list.appendChild(div);
+  });
+}
+
+function hapusChat(id) {
+  if (!confirm('Hapus percakapan ini? Semua pesan dengan klien ini akan hilang.')) return;
+  chatStore = loadChat();
+  delete chatStore[id];
+  saveChat();
+  if (activeChatId === id) {
+    activeChatId = null;
+    document.getElementById('chatActiveArea').style.display = 'none';
+    document.getElementById('chatEmptyState').style.display = 'flex';
+  }
+  renderAdminChatList();
+  updateAdminChatBadge();
+  showToast('🗑️ Percakapan dihapus');
+}
+
+function hapusSemuaChat() {
+  chatStore = loadChat();
+  const jumlah = Object.keys(chatStore).length;
+  if (jumlah === 0) { showToast('Belum ada percakapan'); return; }
+  if (!confirm(`Hapus SEMUA ${jumlah} percakapan klien? Tindakan ini tidak dapat dibatalkan.`)) return;
+  chatStore = {};
+  saveChat();
+  activeChatId = null;
+  document.getElementById('chatActiveArea').style.display = 'none';
+  document.getElementById('chatEmptyState').style.display = 'flex';
+  renderAdminChatList();
+  updateAdminChatBadge();
+  showToast('🗑️ Semua percakapan dihapus');
+}
+
+function openAdminChat(id) {
+  activeChatId = id;
+  chatStore = loadChat();
+  const c = chatStore[id];
+  if (!c) return;
+  c.unreadAdmin = 0;
+  saveChat();
+  updateAdminChatBadge();
+  renderAdminChatList();
+
+  document.getElementById('chatEmptyState').style.display = 'none';
+  const activeArea = document.getElementById('chatActiveArea');
+  activeArea.style.display = 'flex';
+
+  const initials = (c.name || 'K').split(' ').map(w => w[0]).join('').substr(0,2).toUpperCase();
+  document.getElementById('chatTopbar').innerHTML = `
+    <div class="chat-topbar-avatar">${initials}</div>
+    <div class="chat-topbar-info">
+      <div class="chat-topbar-name">${escapeHtml(c.name)}</div>
+      <div class="chat-topbar-status">● Online</div>
+    </div>
+    <div class="chat-topbar-badge">${escapeHtml(c.bidang)}</div>`;
+
+  const box = document.getElementById('adminMessages');
+  box.innerHTML = '';
+  const divider = document.createElement('div');
+  divider.className = 'chat-date-divider';
+  divider.innerHTML = '<span>Hari ini</span>';
+  box.appendChild(divider);
+
+  c.messages.forEach(msg => appendAdminMsg(msg, c));
+  box.scrollTop = box.scrollHeight;
+  document.getElementById('adminInput').focus();
+}
+
+function appendAdminMsg(msg, c) {
+  const box = document.getElementById('adminMessages');
+  if (!box) return;
+  const isAdmin = msg.from === 'admin';
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + (isAdmin ? 'msg-admin' : 'msg-client');
+  div.innerHTML = `
+    <div class="msg-avatar ${isAdmin ? 'av-admin' : 'av-client'}">${isAdmin ? '⚖' : '👤'}</div>
+    <div class="msg-wrap">
+      <div class="msg-bubble ${isAdmin ? 'bubble-admin' : 'bubble-client'}">${escapeHtml(msg.text)}</div>
+      <div class="msg-time">${isAdmin ? 'Admin' : escapeHtml((c || chatStore[activeChatId])?.name || 'Klien')} · ${msg.time}</div>
+    </div>`;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function adminSend() {
+  chatStore = loadChat();
+  if (!activeChatId || !chatStore[activeChatId]) {
+    showToast('⚠️ Pilih percakapan klien dulu!');
+    return;
+  }
+  const inp = document.getElementById('adminInput');
+  const text = inp.value.trim();
+  if (!text) return;
+
+  const msg = { from: 'admin', text, time: nowTime(), timeFull: nowFull() };
+  chatStore[activeChatId].messages.push(msg);
+  chatStore[activeChatId].unreadClient = (chatStore[activeChatId].unreadClient || 0) + 1;
+  saveChat();
+
+  appendAdminMsg(msg, chatStore[activeChatId]);
+  inp.value = '';
+  inp.style.height = 'auto';
+  renderAdminChatList();
+
+  showToast('✅ Balasan terkirim ke klien!');
+}
+
+function updateAdminChatBadge() {
+  chatStore = loadChat();
+  const total = Object.values(chatStore).reduce((s, c) => s + (c.unreadAdmin || 0), 0);
+  const badge = document.getElementById('chatBadgeTab');
+  if (total > 0) {
+    badge.style.display = 'inline';
+    badge.textContent = total;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ===================== SINKRONISASI ANTAR HALAMAN =====================
+// Saat klien.html mengubah localStorage (konsultasi baru / chat baru),
+// dashboard ini akan otomatis menyegarkan tampilan.
+window.addEventListener('storage', (e) => {
+  if (!sessionStorage.getItem(SESSION_KEY)) return;
+  if (e.key === LS_DATA) {
+    data = loadData();
+    updateDashboard();
+  }
+  if (e.key === LS_PAY) {
+    payData = loadPayData();
+    renderPaymentTable();
+    updatePayBadge();
+  }
+  if (e.key === LS_CHAT) {
+    renderAdminChatList();
+    updateAdminChatBadge();
+    if (activeChatId) {
+      const c = loadChat()[activeChatId];
+      if (c) {
+        const box = document.getElementById('adminMessages');
+        const rendered = box.querySelectorAll('.chat-msg').length;
+        if (c.messages.length > rendered) {
+          c.messages.slice(rendered).forEach(msg => appendAdminMsg(msg, c));
+        }
+      }
+    }
+  }
+});
+
+// Polling cadangan (untuk browser yang tidak memicu event 'storage' tepat waktu)
+setInterval(() => {
+  if (!sessionStorage.getItem(SESSION_KEY)) return;
+  const fresh = loadData();
+  if (JSON.stringify(fresh) !== JSON.stringify(data)) {
+    data = fresh;
+    updateDashboard();
+  }
+  const freshPay = loadPayData();
+  if (JSON.stringify(freshPay) !== JSON.stringify(payData)) {
+    payData = freshPay;
+    renderPaymentTable();
+    updatePayBadge(document.getElementById('tab-pembayaran').style.display === 'block');
+  }
+  renderAdminChatList();
+  updateAdminChatBadge();
+}, 3000);
+
+// ===================== INIT =====================
+// Jika sesi login masih aktif (tab/halaman direfresh), langsung tampilkan dashboard
+if (sessionStorage.getItem(SESSION_KEY) === '1') {
+  enterAdmin();
+}
+</script>
+</body>
+</html>
