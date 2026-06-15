@@ -1,0 +1,2367 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AlifahLawFirm – Konsultasi Hukum Online (Klien)</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8CC82;
+    --dark: #0D0D0D;
+    --darker: #070707;
+    --card: #161616;
+    --border: #2a2a2a;
+    --text: #E8E4DC;
+    --muted: #888;
+    --accent: #C9A84C;
+    --danger: #E05252;
+    --success: #52C97F;
+    --info: #5296C9;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--darker);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 48px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(13,13,13,0.95);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--gold);
+    letter-spacing: 1px;
+  }
+  .logo span { color: var(--text); }
+
+  nav ul { list-style:none; display:flex; gap:28px; }
+  nav ul li a {
+    text-decoration:none;
+    color: var(--muted);
+    font-size: .9rem;
+    font-weight: 500;
+    transition: color .2s;
+  }
+  nav ul li a:hover, nav ul li a.active { color: var(--gold); }
+
+  .btn-nav {
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    padding: 9px 22px;
+    border-radius: 6px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: background .2s;
+  }
+  .btn-nav:hover { background: var(--gold-light); }
+
+  /* NOTIFIKASI */
+  .notif-wrap { position:relative; }
+  .notif-btn {
+    background:none; border:1px solid var(--border); color:var(--text);
+    width:38px; height:38px; border-radius:8px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; font-size:1.05rem;
+    transition:all .2s; position:relative;
+  }
+  .notif-btn:hover { border-color:var(--gold); }
+  .notif-dot {
+    position:absolute; top:-4px; right:-4px; background:var(--danger); color:#fff;
+    font-size:.62rem; font-weight:800; min-width:16px; height:16px; border-radius:8px;
+    display:none; align-items:center; justify-content:center; padding:0 3px;
+  }
+  .notif-panel {
+    position:absolute; top:48px; right:0; width:340px; max-height:400px; overflow-y:auto;
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    box-shadow:0 12px 32px rgba(0,0,0,0.5); display:none; z-index:200;
+  }
+  .notif-panel.open { display:block; }
+  .notif-panel-header {
+    padding:14px 16px; border-bottom:1px solid var(--border); font-weight:700; font-size:.88rem;
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .notif-panel-header span { font-size:.74rem; color:var(--gold); cursor:pointer; font-weight:600; }
+  .notif-item {
+    padding:14px 16px; border-bottom:1px solid var(--border); font-size:.82rem; line-height:1.6;
+  }
+  .notif-item:last-child { border-bottom:none; }
+  .notif-item.unread { background:rgba(224,82,82,0.06); }
+  .notif-item-title { font-weight:700; color:var(--danger); margin-bottom:4px; display:flex; align-items:center; gap:6px; }
+  .notif-item-desc { color:var(--muted); }
+  .notif-item-time { color:var(--muted); font-size:.7rem; margin-top:6px; }
+  .notif-empty { padding:32px 16px; text-align:center; color:var(--muted); font-size:.84rem; }
+
+  .reject-banner {
+    background:rgba(224,82,82,0.08); border:1px solid rgba(224,82,82,0.3); border-radius:12px;
+    padding:16px 20px; margin-bottom:24px; display:flex; gap:12px; align-items:flex-start;
+  }
+  .reject-banner-icon { font-size:1.4rem; flex-shrink:0; }
+  .reject-banner-title { font-weight:700; color:var(--danger); margin-bottom:4px; }
+  .reject-banner-desc { color:var(--muted); font-size:.85rem; line-height:1.6; }
+  .reject-banner-close {
+    background:none; border:none; color:var(--muted); cursor:pointer; font-size:1rem;
+    margin-left:auto; flex-shrink:0;
+  }
+  .reject-banner-close:hover { color:var(--text); }
+
+  /* PAGES */
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* HERO */
+  .hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 90px 24px 60px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.08) 0%, transparent 65%);
+  }
+
+  .hero-badge {
+    display: inline-block;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    font-size: .78rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 18px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    line-height: 1.15;
+    max-width: 700px;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--gold);
+  }
+
+  .hero p {
+    color: var(--muted);
+    font-size: 1.05rem;
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+
+  .hero-btns { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    padding: 13px 30px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: .95rem;
+    cursor: pointer;
+    transition: all .2s;
+    letter-spacing: .3px;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 13px 30px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: .95rem;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* STATS */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0;
+    background: var(--card);
+  }
+  .stat {
+    flex: 1;
+    max-width: 200px;
+    text-align: center;
+    padding: 28px 20px;
+    border-right: 1px solid var(--border);
+  }
+  .stat:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--gold);
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .stat-label { font-size: .78rem; color: var(--muted); font-weight: 500; }
+
+  /* SERVICES */
+  .section {
+    padding: 72px 48px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+  .section-sub { color: var(--muted); font-size: .95rem; margin-bottom: 40px; }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+  }
+
+  .service-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    transition: border-color .2s, transform .2s;
+    cursor: pointer;
+  }
+  .service-card:hover { border-color: var(--gold); transform: translateY(-4px); }
+
+  .service-icon {
+    width: 44px;
+    height: 44px;
+    background: rgba(201,168,76,0.12);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    margin-bottom: 16px;
+  }
+
+  .service-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .service-card p { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+
+  /* FORM */
+  .form-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .form-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+  }
+  .form-sub { color: var(--muted); font-size: .9rem; margin-bottom: 32px; }
+
+  .form-row { display: flex; gap: 16px; }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-bottom: 18px;
+    flex: 1;
+  }
+
+  label { font-size: .82rem; font-weight: 600; color: #aaa; letter-spacing: .4px; }
+
+  input, select, textarea {
+    background: #1e1e1e;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .9rem;
+    outline: none;
+    transition: border-color .2s;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus { border-color: var(--gold); }
+  textarea { resize: vertical; min-height: 120px; }
+  select option { background: #1e1e1e; }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 8px;
+  }
+  .submit-btn:hover { background: var(--gold-light); }
+
+  /* DASHBOARD */
+  .dash-header {
+    padding: 40px 48px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .dash-header h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    margin-bottom: 6px;
+  }
+  .dash-header p { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
+
+  .dash-tabs { display:flex; gap:0; }
+  .dash-tab {
+    padding: 10px 22px;
+    font-size: .88rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    color: var(--muted);
+    transition: all .2s;
+    background: none;
+    border-top: none; border-left: none; border-right: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .dash-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+  .dash-body { padding: 0 48px 48px; }
+
+  /* KPI CARDS */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .kpi-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 20px;
+  }
+  .kpi-label { font-size: .75rem; color: var(--muted); font-weight: 600; letter-spacing: .4px; margin-bottom: 10px; text-transform: uppercase; }
+  .kpi-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .kpi-change { font-size: .78rem; font-weight: 600; }
+  .kpi-change.up { color: var(--success); }
+  .kpi-change.down { color: var(--danger); }
+  .kpi-change.neu { color: var(--muted); }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .table-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-head h3 { font-size: .95rem; font-weight: 600; }
+  .table-head span { font-size: .8rem; color: var(--muted); }
+
+  .filter-row {
+    display: flex;
+    gap: 10px;
+    padding: 14px 22px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .filter-row input, .filter-row select {
+    max-width: 200px;
+    padding: 7px 12px;
+    font-size: .82rem;
+  }
+
+  table { width:100%; border-collapse:collapse; }
+  thead tr { background: #1a1a1a; }
+  th {
+    padding: 12px 16px;
+    font-size: .75rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-align: left;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    user-select: none;
+  }
+  th:hover { color: var(--gold); }
+  td {
+    padding: 13px 16px;
+    font-size: .84rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(201,168,76,0.03); }
+
+  .badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: .72rem;
+    font-weight: 700;
+  }
+  .badge-pending { background: rgba(201,168,76,0.15); color: var(--gold); }
+  .badge-done { background: rgba(82,201,127,0.15); color: var(--success); }
+  .badge-process { background: rgba(82,150,201,0.15); color: var(--info); }
+  .badge-cancel { background: rgba(224,82,82,0.15); color: var(--danger); }
+
+  /* ACTION BUTTONS */
+  .action-btns { display:flex; gap:6px; }
+  .btn-sm {
+    padding: 5px 12px;
+    border-radius: 5px;
+    font-size: .75rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    transition: all .15s;
+  }
+  .btn-view { background: rgba(82,150,201,0.15); color: var(--info); }
+  .btn-view:hover { background: rgba(82,150,201,0.3); }
+  .btn-done { background: rgba(82,201,127,0.15); color: var(--success); }
+  .btn-done:hover { background: rgba(82,201,127,0.3); }
+  .btn-del { background: rgba(224,82,82,0.15); color: var(--danger); }
+  .btn-del:hover { background: rgba(224,82,82,0.3); }
+
+  /* CHARTS AREA */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 24px;
+  }
+
+  .chart-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+  }
+
+  .chart-card h3 { font-size: .9rem; font-weight: 600; margin-bottom: 18px; color: #ccc; }
+
+  .bar-chart { display:flex; align-items:flex-end; gap:10px; height:120px; }
+  .bar-group { display:flex; flex-direction:column; align-items:center; gap:6px; flex:1; }
+  .bar {
+    width: 100%;
+    background: var(--gold);
+    border-radius: 4px 4px 0 0;
+    min-height: 4px;
+    transition: opacity .2s;
+  }
+  .bar:hover { opacity: .75; }
+  .bar-label { font-size: .68rem; color: var(--muted); }
+
+  .donut-wrap { display:flex; align-items:center; gap:24px; }
+  .donut-svg { flex-shrink:0; }
+  .legend { display:flex; flex-direction:column; gap:10px; }
+  .legend-item { display:flex; align-items:center; gap:8px; font-size: .8rem; }
+  .legend-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+  /* EXPORT BTN */
+  .export-btn {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    padding: 8px 20px;
+    border-radius: 7px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .export-btn:hover { background: rgba(201,168,76,0.2); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 999;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    max-width: 520px;
+    width: 92%;
+    position: relative;
+  }
+  .modal h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: var(--gold);
+  }
+  .modal-close {
+    position: absolute;
+    top: 16px; right: 20px;
+    background: none; border: none;
+    color: var(--muted); font-size: 1.4rem;
+    cursor: pointer;
+  }
+  .detail-row { display:flex; gap:12px; margin-bottom: 12px; }
+  .detail-label { font-size: .78rem; font-weight: 600; color: var(--muted); min-width: 110px; }
+  .detail-value { font-size: .88rem; color: var(--text); }
+
+  .toast {
+    position: fixed;
+    bottom: 28px; right: 28px;
+    background: var(--success);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: .88rem;
+    z-index: 9999;
+    display: none;
+    animation: slideUp .3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity:0; }
+    to { transform: translateY(0); opacity:1; }
+  }
+
+  /* PEMBAYARAN */
+  .pay-layout { max-width:900px; margin:0 auto; padding:48px 24px; }
+  .pay-title { font-family:'Playfair Display',serif; font-size:2rem; margin-bottom:6px; }
+  .pay-sub { color:var(--muted); font-size:.92rem; margin-bottom:36px; }
+  .paket-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:36px; }
+  .paket-card { background:var(--card); border:1.5px solid var(--border); border-radius:14px; padding:24px 20px; cursor:pointer; transition:all .2s; position:relative; }
+  .paket-card:hover { border-color:var(--gold); transform:translateY(-3px); }
+  .paket-card.selected { border-color:var(--gold); background:rgba(201,168,76,0.06); }
+  .paket-badge { position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:var(--gold); color:var(--dark); font-size:.68rem; font-weight:700; padding:3px 12px; border-radius:20px; letter-spacing:.5px; white-space:nowrap; }
+  .paket-card.gratis { border-color:rgba(76,175,80,0.4); }
+  .paket-card.gratis:hover { border-color:#4CAF50; }
+  .paket-card.gratis.selected { border-color:#4CAF50; background:rgba(76,175,80,0.07); }
+  .paket-badge.badge-gratis { background:#4CAF50; color:#fff; }
+  .paket-price.gratis-price { color:#4CAF50; }
+  .gratis-form { background:rgba(76,175,80,0.06); border:1px solid rgba(76,175,80,0.25); border-radius:14px; padding:24px; margin-bottom:24px; }
+  .gratis-form-title { font-family:'Playfair Display',serif; font-size:1.05rem; color:#4CAF50; margin-bottom:6px; }
+  .gratis-form-sub { font-size:.82rem; color:var(--muted); margin-bottom:18px; line-height:1.6; }
+  .gratis-form label { display:block; font-size:.8rem; font-weight:600; color:var(--text); margin-bottom:6px; }
+  .gratis-form select, .gratis-form textarea, .gratis-form input {
+    width:100%; background:#1e1e1e; border:1px solid var(--border); color:var(--text);
+    border-radius:8px; padding:10px 12px; font-size:.85rem; font-family:'DM Sans',sans-serif;
+    margin-bottom:16px; resize:vertical;
+  }
+  .gratis-form select:focus, .gratis-form textarea:focus, .gratis-form input:focus { outline:none; border-color:#4CAF50; }
+  .gratis-form .field-hint { font-size:.72rem; color:var(--muted); margin-top:-12px; margin-bottom:16px; }
+  .paket-icon { font-size:1.8rem; margin-bottom:10px; }
+  .paket-name { font-family:'Playfair Display',serif; font-size:1.05rem; margin-bottom:4px; }
+  .paket-desc { font-size:.78rem; color:var(--muted); margin-bottom:14px; line-height:1.5; }
+  .paket-price { font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--gold); font-weight:700; }
+  .paket-price span { font-size:.78rem; color:var(--muted); font-weight:400; font-family:'DM Sans',sans-serif; }
+  .metode-section { margin-bottom:32px; }
+  .metode-label { font-size:.82rem; font-weight:700; color:#aaa; letter-spacing:.5px; margin-bottom:14px; }
+  .metode-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+  .metode-card { background:var(--card); border:1.5px solid var(--border); border-radius:12px; padding:16px 14px; cursor:pointer; transition:all .2s; text-align:center; }
+  .metode-card:hover { border-color:var(--gold); }
+  .metode-card.selected { border-color:var(--gold); background:rgba(201,168,76,0.06); }
+  .metode-logo { font-size:1.6rem; margin-bottom:6px; }
+  .metode-logo svg { display:block; margin:0 auto; border-radius:8px; }
+  .metode-group-label {
+    font-size:.75rem;
+    font-weight:700;
+    color:var(--muted);
+    letter-spacing:.8px;
+    text-transform:uppercase;
+    margin-bottom:10px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--border);
+  }
+  .metode-name { font-size:.8rem; font-weight:600; color:var(--text); }
+  .metode-type { font-size:.7rem; color:var(--muted); margin-top:2px; }
+  .pay-detail-box { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:28px; margin-bottom:24px; display:none; }
+  .pay-detail-box.show { display:block; }
+  .pay-detail-title { font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--gold); margin-bottom:20px; }
+  .pay-info-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid var(--border); font-size:.88rem; }
+  .pay-info-row:last-of-type { border-bottom:none; }
+  .pay-info-label { color:var(--muted); }
+  .pay-info-value { font-weight:600; color:var(--text); }
+  .pay-info-value.gold { color:var(--gold); }
+  .qris-box { text-align:center; padding:20px 0 8px; }
+  .qris-frame { display:inline-block; background:#fff; padding:16px; border-radius:12px; margin-bottom:10px; }
+  .qris-note { font-size:.8rem; color:var(--muted); }
+  .rekening-box { margin-top:12px; }
+  .rek-item { background:#1e1e1e; border:1px solid var(--border); border-radius:10px; padding:14px 18px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .rek-bank { font-weight:700; font-size:.92rem; color:var(--gold); }
+  .rek-num { font-family:monospace; font-size:1rem; color:var(--text); letter-spacing:2px; margin:2px 0; }
+  .rek-name { font-size:.78rem; color:var(--muted); }
+  .copy-btn { background:rgba(201,168,76,0.12); border:1px solid rgba(201,168,76,0.3); color:var(--gold); padding:6px 14px; border-radius:7px; font-size:.75rem; font-weight:600; cursor:pointer; font-family:'DM Sans',sans-serif; transition:all .2s; white-space:nowrap; }
+  .copy-btn:hover { background:rgba(201,168,76,0.25); }
+  .pay-summary { background:rgba(201,168,76,0.06); border:1px solid rgba(201,168,76,0.2); border-radius:12px; padding:18px 22px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center; }
+  .pay-summary-label { font-size:.85rem; color:var(--muted); }
+  .pay-summary-total { font-family:'Playfair Display',serif; font-size:1.6rem; color:var(--gold); font-weight:700; }
+  .pay-confirm-btn { width:100%; background:var(--gold); color:var(--dark); border:none; padding:15px; border-radius:10px; font-family:'DM Sans',sans-serif; font-weight:700; font-size:1rem; cursor:pointer; transition:all .2s; margin-top:4px; }
+  .pay-confirm-btn:hover { background:var(--gold-light); transform:translateY(-2px); }
+  .pay-confirm-btn:disabled { background:#444; color:#888; cursor:not-allowed; transform:none; }
+  .pay-success { text-align:center; padding:48px 24px; display:none; }
+  .pay-success.show { display:block; }
+  .pay-success-icon { font-size:4rem; margin-bottom:16px; }
+  .pay-success h2 { font-family:'Playfair Display',serif; font-size:1.8rem; color:var(--success); margin-bottom:8px; }
+  .pay-success p { color:var(--muted); font-size:.95rem; margin-bottom:24px; }
+
+  /* CHAT */
+  .chat-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    height: calc(100vh - 180px);
+    min-height: 500px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--card);
+  }
+
+  .chat-sidebar {
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    background: #111;
+  }
+
+  .chat-sidebar-header {
+    padding: 18px 16px 14px;
+    border-bottom: 1px solid var(--border);
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+
+  .chat-list {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  .chat-list-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+    position: relative;
+  }
+  .chat-list-item:hover { background: rgba(201,168,76,0.05); }
+  .chat-list-item.active { background: rgba(201,168,76,0.10); border-left: 3px solid var(--gold); }
+
+  .chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #8a6820);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--dark);
+    flex-shrink: 0;
+  }
+
+  .chat-item-info { flex: 1; min-width: 0; }
+  .chat-item-name { font-size: .85rem; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .chat-item-preview { font-size: .74rem; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+  .chat-item-time { font-size: .68rem; color: var(--muted); flex-shrink: 0; align-self: flex-start; margin-top: 2px; }
+
+  .chat-unread {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    background: var(--gold);
+    color: var(--dark);
+    font-size: .65rem;
+    font-weight: 800;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .chat-main {
+    display: flex;
+    flex-direction: column;
+    background: var(--darker);
+  }
+
+  .chat-topbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card);
+  }
+
+  .chat-topbar-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), #8a6820);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .9rem;
+    color: var(--dark);
+  }
+
+  .chat-topbar-info { flex: 1; }
+  .chat-topbar-name { font-size: .9rem; font-weight: 700; color: var(--text); }
+  .chat-topbar-status { font-size: .74rem; color: var(--success); }
+
+  .chat-topbar-badge {
+    background: rgba(82,150,201,0.15);
+    color: var(--info);
+    font-size: .72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .chat-msg {
+    display: flex;
+    gap: 10px;
+    max-width: 70%;
+  }
+  .chat-msg.msg-admin { align-self: flex-end; flex-direction: row-reverse; }
+  .chat-msg.msg-client { align-self: flex-start; }
+
+  .msg-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    align-self: flex-end;
+  }
+  .msg-avatar.av-admin { background: linear-gradient(135deg, var(--gold), #8a6820); color: var(--dark); }
+  .msg-avatar.av-client { background: #2a2a2a; color: var(--muted); }
+
+  .msg-bubble {
+    padding: 11px 15px;
+    border-radius: 16px;
+    font-size: .86rem;
+    line-height: 1.6;
+    max-width: 100%;
+  }
+  .msg-bubble.bubble-admin {
+    background: var(--gold);
+    color: var(--dark);
+    border-bottom-right-radius: 4px;
+    font-weight: 500;
+  }
+  .msg-bubble.bubble-client {
+    background: #1e1e1e;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+
+  .msg-time {
+    font-size: .68rem;
+    color: var(--muted);
+    margin-top: 4px;
+    text-align: right;
+  }
+  .chat-msg.msg-client .msg-time { text-align: left; }
+
+  .msg-wrap { display: flex; flex-direction: column; }
+
+  .chat-date-divider {
+    text-align: center;
+    font-size: .72rem;
+    color: var(--muted);
+    margin: 6px 0;
+    position: relative;
+  }
+  .chat-date-divider::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0; top: 50%;
+    height: 1px;
+    background: var(--border);
+  }
+  .chat-date-divider span { background: var(--darker); position: relative; padding: 0 12px; }
+
+  .chat-inputbar {
+    display: flex;
+    gap: 10px;
+    padding: 16px 22px;
+    border-top: 1px solid var(--border);
+    background: var(--card);
+    align-items: flex-end;
+  }
+
+  .chat-input {
+    flex: 1;
+    background: #1e1e1e;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 11px 16px;
+    border-radius: 24px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .88rem;
+    resize: none;
+    outline: none;
+    min-height: 44px;
+    max-height: 120px;
+    line-height: 1.5;
+    transition: border-color .2s;
+  }
+  .chat-input:focus { border-color: var(--gold); }
+
+  .chat-send-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+    flex-shrink: 0;
+  }
+  .chat-send-btn:hover { background: var(--gold-light); transform: scale(1.08); }
+
+  .chat-empty {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    gap: 12px;
+  }
+  .chat-empty-icon { font-size: 3rem; }
+  .chat-empty p { font-size: .9rem; }
+
+  /* FLOATING CHAT WIDGET (Client) */
+  .chat-float-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    cursor: pointer;
+    font-size: 1.4rem;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(201,168,76,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .25s;
+  }
+  .chat-float-btn:hover { transform: scale(1.1); background: var(--gold-light); }
+  .chat-float-btn .chat-float-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: var(--danger);
+    color: #fff;
+    font-size: .6rem;
+    font-weight: 800;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--darker);
+  }
+
+  .chat-float-panel {
+    position: fixed;
+    bottom: 96px;
+    right: 28px;
+    width: 360px;
+    height: 520px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.95) translateY(10px);
+    opacity: 0;
+    transition: all .25s cubic-bezier(.4,0,.2,1);
+  }
+  .chat-float-panel.open {
+    display: flex;
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  .float-panel-header {
+    background: linear-gradient(135deg, #1a1400, #2a2000);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .float-panel-logo {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+  }
+  .float-panel-title { flex: 1; }
+  .float-panel-title strong { display: block; font-size: .92rem; color: var(--text); }
+  .float-panel-title span { font-size: .74rem; color: var(--success); }
+  .float-close-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .float-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .float-msg { display: flex; flex-direction: column; max-width: 80%; }
+  .float-msg.msg-me { align-self: flex-end; align-items: flex-end; }
+  .float-msg.msg-them { align-self: flex-start; align-items: flex-start; }
+
+  .float-bubble {
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: .84rem;
+    line-height: 1.55;
+  }
+  .float-bubble.bubble-me {
+    background: var(--gold);
+    color: var(--dark);
+    font-weight: 500;
+    border-bottom-right-radius: 4px;
+  }
+  .float-bubble.bubble-them {
+    background: #1e1e1e;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-bottom-left-radius: 4px;
+  }
+  .float-time { font-size: .65rem; color: var(--muted); margin-top: 3px; padding: 0 2px; }
+
+  .float-input-row {
+    display: flex;
+    gap: 8px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--border);
+    background: #111;
+    align-items: flex-end;
+  }
+  .float-input {
+    flex: 1;
+    background: #1e1e1e;
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 14px;
+    border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: .84rem;
+    resize: none;
+    outline: none;
+    min-height: 38px;
+    max-height: 100px;
+    line-height: 1.4;
+    transition: border-color .2s;
+  }
+  .float-input:focus { border-color: var(--gold); }
+  .float-send {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--gold);
+    color: var(--dark);
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all .2s;
+  }
+  .float-send:hover { background: var(--gold-light); }
+
+  /* RESPONSIVE */
+  @media(max-width:900px) {
+    .paket-grid { grid-template-columns: repeat(2,1fr); }
+  }
+  @media(max-width:768px) {
+    nav { padding: 14px 20px; }
+    nav ul { display:none; }
+    .section { padding: 40px 20px; }
+    .dash-header, .dash-body { padding-left: 20px; padding-right: 20px; }
+    .kpi-grid { grid-template-columns: 1fr 1fr; }
+    .charts-row { grid-template-columns: 1fr; }
+    .form-row { flex-direction: column; }
+    .form-section { padding: 28px 20px; }
+    .stats { flex-wrap: wrap; }
+    table { font-size: .75rem; }
+    .paket-grid { grid-template-columns: 1fr; }
+    .metode-grid { grid-template-columns: repeat(2,1fr); }
+  }
+
+/* === SUKSES KONSULTASI === */
+.success-box { text-align:center; padding:32px 12px; display:none; }
+.success-box.show { display:block; }
+.success-box .success-icon { font-size:3.4rem; margin-bottom:14px; }
+.success-box h3 { font-family:'Playfair Display',serif; font-size:1.5rem; margin-bottom:10px; color: var(--success); }
+.success-box p { color: var(--muted); font-size:.92rem; line-height:1.7; margin-bottom:24px; }
+.success-id { display:inline-block; background: rgba(201,168,76,0.1); border:1px solid rgba(201,168,76,0.3); color: var(--gold); font-weight:700; padding:6px 18px; border-radius:8px; margin-bottom:18px; font-family:'Playfair Display',serif; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Alifah<span>LawFirm</span></div>
+  <ul>
+    <li><a href="#" class="active" onclick="showPage('home',this)">Beranda</a></li>
+    <li><a href="#" onclick="showPage('konsultasi',this)">Konsultasi</a></li>
+    <li><a href="#" onclick="showPage('pembayaran',this)">Pembayaran</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div class="notif-wrap">
+      <button class="notif-btn" onclick="toggleNotifPanel()" title="Notifikasi">
+        🔔
+        <span class="notif-dot" id="notifDot">0</span>
+      </button>
+      <div class="notif-panel" id="notifPanel">
+        <div class="notif-panel-header">
+          <div>Notifikasi</div>
+          <span onclick="markAllNotifRead()">Tandai semua dibaca</span>
+        </div>
+        <div id="notifList"><div class="notif-empty">Belum ada notifikasi.</div></div>
+      </div>
+    </div>
+    <button class="btn-nav" onclick="showPage('konsultasi',null)">Mulai Konsultasi</button>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Data berhasil disimpan!</div>
+
+<!-- HOME PAGE -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-badge">⚖️ Platform Hukum Terpercaya</div>
+    <h1>Solusi Hukum yang <em>Tepat</em> untuk Setiap Masalah Anda</h1>
+    <p>Konsultasikan permasalahan hukum Anda dengan pengacara berpengalaman. Cepat, rahasia, dan terjangkau.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showPage('konsultasi',null)">📝 Ajukan Konsultasi</button>
+      <button class="btn-secondary" onclick="showPage('pembayaran',null)">💳 Lihat Pembayaran</button>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-num" id="totalStat">0</div><div class="stat-label">Total Konsultasi</div></div>
+    <div class="stat"><div class="stat-num" id="selesaiStat">0</div><div class="stat-label">Selesai</div></div>
+    <div class="stat"><div class="stat-num" id="prosesStat">0</div><div class="stat-label">Diproses</div></div>
+    <div class="stat"><div class="stat-num" id="menungguStat">0</div><div class="stat-label">Menunggu</div></div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Layanan Kami</div>
+    <div class="section-sub">Berbagai bidang hukum yang kami tangani</div>
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">🏠</div>
+        <h3>Hukum Perdata</h3>
+        <p>Sengketa tanah, warisan, perjanjian kontrak, dan permasalahan keperdataan lainnya.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">⚖️</div>
+        <h3>Hukum Pidana</h3>
+        <p>Pendampingan hukum dalam perkara pidana mulai dari penyelidikan hingga persidangan.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">💼</div>
+        <h3>Hukum Bisnis</h3>
+        <p>Pendirian perusahaan, kontrak bisnis, merger, akuisisi, dan kepatuhan korporat.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">👨‍👩‍👧</div>
+        <h3>Hukum Keluarga</h3>
+        <p>Perceraian, hak asuh anak, perwalian, adopsi, dan permasalahan keluarga.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">🏛️</div>
+        <h3>Hukum Administrasi</h3>
+        <p>Sengketa dengan instansi pemerintah, perizinan, dan keputusan tata usaha negara.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">💡</div>
+        <h3>HKI</h3>
+        <p>Hak cipta, merek dagang, paten, desain industri, dan perlindungan kekayaan intelektual.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- KONSULTASI PAGE -->
+<div class="page" id="page-konsultasi">
+  <div class="section" style="padding-top:48px">
+    <div class="form-section" id="konsulFormWrap">
+      <div class="form-title">Form Konsultasi</div>
+      <div class="form-sub">Isi data lengkap Anda untuk mendapatkan layanan konsultasi hukum terbaik. Data Anda bersifat rahasia dan hanya dapat diakses oleh tim AlifahLawFirm.</div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>NAMA LENGKAP *</label>
+          <input type="text" id="fNama" placeholder="John Doe">
+        </div>
+        <div class="form-group">
+          <label>NIK / KTP</label>
+          <input type="text" id="fNIK" placeholder="3271...">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>EMAIL *</label>
+          <input type="email" id="fEmail" placeholder="email@contoh.com">
+        </div>
+        <div class="form-group">
+          <label>NO. TELEPON *</label>
+          <input type="text" id="fTelp" placeholder="08xx-xxxx-xxxx">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>BIDANG HUKUM *</label>
+          <select id="fBidang">
+            <option value="">-- Pilih Bidang --</option>
+            <option>Hukum Perdata</option>
+            <option>Hukum Pidana</option>
+            <option>Hukum Bisnis</option>
+            <option>Hukum Keluarga</option>
+            <option>Hukum Administrasi</option>
+            <option>HKI</option>
+            <option>Lainnya</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>URGENSI</label>
+          <select id="fUrgensi">
+            <option>Normal (1–3 hari)</option>
+            <option>Segera (24 jam)</option>
+            <option>Darurat (hari ini)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>ALAMAT</label>
+        <input type="text" id="fAlamat" placeholder="Jl. Contoh No. 1, Jakarta">
+      </div>
+
+      <div class="form-group">
+        <label>DESKRIPSI MASALAH HUKUM *</label>
+        <textarea id="fDeskripsi" placeholder="Jelaskan permasalahan hukum yang Anda hadapi secara detail..."></textarea>
+      </div>
+
+      <button class="submit-btn" onclick="submitKonsultasi()">🚀 Kirim Konsultasi</button>
+    </div>
+
+    <!-- SUKSES -->
+    <div class="form-section success-box" id="konsulSuccess">
+      <div class="success-icon">✅</div>
+      <h3>Konsultasi Berhasil Dikirim!</h3>
+      <div class="success-id" id="successId">#0</div>
+      <p>Terima kasih, data Anda sudah kami terima dengan aman. Tim AlifahLawFirm akan segera menghubungi Anda. Anda juga bisa memantau & melanjutkan percakapan melalui ikon chat 💬 di pojok kanan bawah.</p>
+      <button class="btn-primary" onclick="resetKonsulForm()">📝 Kirim Konsultasi Lain</button>
+      <button class="btn-secondary" onclick="showPage('home',null)" style="margin-left:10px">🏠 Kembali ke Beranda</button>
+    </div>
+  </div>
+</div>
+<!-- FLOATING CHAT WIDGET (Klien) -->
+<button class="chat-float-btn" id="chatFloatBtn" onclick="toggleFloatChat()" title="Chat Konsultasi">
+  💬
+  <span class="chat-float-badge" id="floatBadge" style="display:none">1</span>
+</button>
+
+<div class="chat-float-panel" id="chatFloatPanel">
+  <div class="float-panel-header">
+    <div class="float-panel-logo">⚖️</div>
+    <div class="float-panel-title">
+      <strong>AlifahLawFirm</strong>
+      <span>● Online — Tim Admin</span>
+    </div>
+    <button class="float-close-btn" onclick="hapusChatKlien()" title="Hapus riwayat chat saya" style="font-size:1rem">🧹</button>
+    <button class="float-close-btn" onclick="toggleFloatChat()">✕</button>
+  </div>
+  <div class="float-messages" id="floatMessages">
+    <!-- Pesan selamat datang -->
+    <div class="float-msg msg-them">
+      <div class="float-bubble bubble-them">Selamat datang di <strong>AlifahLawFirm</strong>! 👋<br>Ada yang bisa kami bantu terkait konsultasi hukum Anda?</div>
+      <div class="float-time">Tim Admin · Sekarang</div>
+    </div>
+  </div>
+  <div class="float-input-row">
+    <textarea class="float-input" id="floatInput" placeholder="Tulis pesan Anda..." rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();clientSend()}"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+    <button class="float-send" onclick="clientSend()">➤</button>
+  </div>
+</div>
+
+<!-- PEMBAYARAN PAGE -->
+<div class="page" id="page-pembayaran">
+  <div class="pay-layout">
+    <div id="payForm">
+      <div id="rejectBannerHolder"></div>
+      <div class="pay-title">💳 Pembayaran Konsultasi</div>
+      <div class="pay-sub">Pilih paket layanan dan metode pembayaran yang Anda inginkan.</div>
+
+      <!-- PILIH PAKET -->
+      <div class="metode-label">PILIH PAKET LAYANAN</div>
+      <div class="paket-grid">
+        <div class="paket-card" id="paket-basic" onclick="pilihPaket('basic',150000,'Konsultasi Basic','Konsultasi tertulis via chat, respon 1–3 hari kerja.')">
+          <div class="paket-icon">📋</div>
+          <div class="paket-name">Basic</div>
+          <div class="paket-desc">Konsultasi tertulis via chat, respon 1–3 hari kerja.</div>
+          <div class="paket-price">Rp 150.000 <span>/ sesi</span></div>
+        </div>
+        <div class="paket-card" id="paket-standard" onclick="pilihPaket('standard',350000,'Konsultasi Standard','Konsultasi via video call 60 menit + ringkasan tertulis.')">
+          <div class="paket-badge">⭐ Populer</div>
+          <div class="paket-icon">🎥</div>
+          <div class="paket-name">Standard</div>
+          <div class="paket-desc">Konsultasi via video call 60 menit + ringkasan tertulis.</div>
+          <div class="paket-price">Rp 350.000 <span>/ sesi</span></div>
+        </div>
+        <div class="paket-card" id="paket-premium" onclick="pilihPaket('premium',750000,'Konsultasi Premium','Pendampingan penuh oleh pengacara senior, prioritas 24 jam.')">
+          <div class="paket-icon">👑</div>
+          <div class="paket-name">Premium</div>
+          <div class="paket-desc">Pendampingan penuh oleh pengacara senior, prioritas 24 jam.</div>
+          <div class="paket-price">Rp 750.000 <span>/ sesi</span></div>
+        </div>
+        <div class="paket-card gratis" id="paket-gratis" onclick="pilihPaket('gratis',0,'Konsultasi Gratis (Bantuan Hukum)','Konsultasi tertulis via chat untuk masyarakat tidak mampu & pelaku UMKM kecil.')">
+          <div class="paket-badge badge-gratis">🤝 Bantuan Hukum</div>
+          <div class="paket-icon">💚</div>
+          <div class="paket-name">Gratis</div>
+          <div class="paket-desc">Konsultasi tertulis via chat, khusus masyarakat tidak mampu & UMKM kecil.</div>
+          <div class="paket-price gratis-price">Rp 0 <span>/ sesi</span></div>
+        </div>
+      </div>
+
+      <!-- FORM KHUSUS GRATIS -->
+      <div class="gratis-form" id="gratisForm" style="display:none">
+        <div class="gratis-form-title">💚 Form Pengajuan Bantuan Hukum Gratis</div>
+        <div class="gratis-form-sub">Layanan ini disediakan khusus untuk masyarakat tidak mampu dan pelaku UMKM kecil. Mohon lengkapi data berikut agar pengajuan dapat diverifikasi oleh tim kami.</div>
+
+        <label>Kategori Pemohon</label>
+        <select id="gKategori">
+          <option value="">— Pilih kategori —</option>
+          <option value="Masyarakat Tidak Mampu">Masyarakat Tidak Mampu</option>
+          <option value="Pelaku UMKM Kecil">Pelaku UMKM Kecil</option>
+        </select>
+
+        <label>Alasan / Penjelasan Singkat Kondisi</label>
+        <textarea id="gAlasan" rows="3" placeholder="Contoh: Saya pemilik warung kecil dengan omzet di bawah Rp5 juta/bulan dan membutuhkan konsultasi terkait sengketa sewa toko."></textarea>
+
+        <label>Nomor KTP / Dokumen Pendukung (opsional)</label>
+        <input type="text" id="gDokumen" placeholder="Contoh: NIK KTP atau No. Surat Keterangan Tidak Mampu (SKTM)">
+        <div class="field-hint">Tim kami akan memverifikasi kelayakan sebelum sesi konsultasi gratis dijadwalkan.</div>
+      </div>
+
+      <!-- PILIH METODE -->
+      <div class="metode-section" id="metodeSection">
+        <div class="metode-label">PILIH METODE PEMBAYARAN</div>
+
+        <!-- QRIS -->
+        <div class="metode-group-label">⚡ QRIS</div>
+        <div class="metode-grid" style="margin-bottom:20px">
+          <div class="metode-card" id="met-qris" onclick="pilihMetode('qris','QRIS')">
+            <div class="metode-logo">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#E8001E"/>
+                <rect x="7" y="7" width="14" height="14" rx="2" fill="white"/>
+                <rect x="10" y="10" width="8" height="8" fill="#E8001E"/>
+                <rect x="27" y="7" width="14" height="14" rx="2" fill="white"/>
+                <rect x="30" y="10" width="8" height="8" fill="#E8001E"/>
+                <rect x="7" y="27" width="14" height="14" rx="2" fill="white"/>
+                <rect x="10" y="30" width="8" height="8" fill="#E8001E"/>
+                <rect x="27" y="27" width="4" height="4" fill="white"/>
+                <rect x="33" y="27" width="4" height="4" fill="white"/>
+                <rect x="27" y="33" width="4" height="4" fill="white"/>
+                <rect x="33" y="33" width="4" height="4" fill="white"/>
+                <rect x="22" y="7" width="4" height="4" fill="white"/>
+                <rect x="7" y="22" width="4" height="4" fill="white"/>
+                <rect x="22" y="22" width="4" height="4" fill="white"/>
+              </svg>
+            </div>
+            <div class="metode-name">QRIS</div>
+            <div class="metode-type">Scan & Bayar</div>
+          </div>
+        </div>
+
+        <!-- M-BANKING -->
+        <div class="metode-group-label">🏦 Mobile Banking</div>
+        <div class="metode-grid" style="margin-bottom:20px">
+          <div class="metode-card" id="met-bca" onclick="pilihMetode('bca','BCA Mobile / m-BCA')">
+            <div class="metode-logo">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#005BAC"/>
+                <text x="24" y="20" font-family="Arial" font-weight="900" font-size="11" fill="white" text-anchor="middle">BCA</text>
+                <text x="24" y="33" font-family="Arial" font-weight="700" font-size="7.5" fill="#7EC8E3" text-anchor="middle">Mobile</text>
+                <rect x="10" y="36" width="28" height="2" rx="1" fill="#7EC8E3" opacity="0.5"/>
+              </svg>
+            </div>
+            <div class="metode-name">BCA Mobile</div>
+            <div class="metode-type">m-Banking</div>
+          </div>
+          <div class="metode-card" id="met-bri" onclick="pilihMetode('bri','BRImo')">
+            <div class="metode-logo">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#003C8E"/>
+                <rect x="6" y="14" width="36" height="20" rx="3" fill="#0055CC"/>
+                <text x="24" y="20" font-family="Arial" font-weight="900" font-size="11" fill="white" text-anchor="middle">BRI</text>
+                <text x="24" y="31" font-family="Arial" font-weight="700" font-size="7.5" fill="#90CAF9" text-anchor="middle">BRImo</text>
+              </svg>
+            </div>
+            <div class="metode-name">BRImo</div>
+            <div class="metode-type">m-Banking</div>
+          </div>
+          <div class="metode-card" id="met-mandiri" onclick="pilihMetode('mandiri','Livin by Mandiri')">
+            <div class="metode-logo">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#003087"/>
+                <polygon points="12,34 24,14 36,34" fill="#F7941D" opacity="0.9"/>
+                <polygon points="18,34 24,22 30,34" fill="white" opacity="0.85"/>
+                <text x="24" y="43" font-family="Arial" font-weight="800" font-size="6" fill="#F7941D" text-anchor="middle">MANDIRI</text>
+              </svg>
+            </div>
+            <div class="metode-name">Livin' Mandiri</div>
+            <div class="metode-type">m-Banking</div>
+          </div>
+          <div class="metode-card" id="met-bni" onclick="pilihMetode('bni','BNI Mobile Banking')">
+            <div class="metode-logo">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#F37021"/>
+                <rect x="7" y="13" width="34" height="22" rx="3" fill="#003087"/>
+                <text x="24" y="22" font-family="Arial" font-weight="900" font-size="11" fill="white" text-anchor="middle">BNI</text>
+                <text x="24" y="31" font-family="Arial" font-weight="600" font-size="6.5" fill="#90CAF9" text-anchor="middle">Mobile</text>
+              </svg>
+            </div>
+            <div class="metode-name">BNI Mobile</div>
+            <div class="metode-type">m-Banking</div>
+          </div>
+        </div>
+
+        <!-- E-WALLET -->
+        <div class="metode-group-label">💳 E-Wallet</div>
+        <div class="metode-grid" style="margin-bottom:20px">
+          <div class="metode-card" id="met-gopay" onclick="pilihMetode('gopay','GoPay')">
+            <div class="metode-logo">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#00AED6"/>
+                <circle cx="24" cy="22" r="11" fill="white"/>
+                <circle cx="24" cy="22" r="8" fill="#00AED6"/>
+                <circle cx="24" cy="22" r="4" fill="white"/>
+                <text x="24" y="40" font-family="Arial" font-weight="800" font-size="7" fill="white" text-anchor="middle">GoPay</text>
+              </svg>
+            </div>
+            <div class="metode-name">GoPay</div>
+            <div class="metode-type">E-Wallet</div>
+          </div>
+          <div class="metode-card" id="met-dana" onclick="pilihMetode('dana','DANA')">
+            <div class="metode-logo">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#118EEA"/>
+                <rect x="8" y="15" width="32" height="18" rx="9" fill="white"/>
+                <text x="24" y="28" font-family="Arial" font-weight="900" font-size="12" fill="#118EEA" text-anchor="middle">DANA</text>
+              </svg>
+            </div>
+            <div class="metode-name">DANA</div>
+            <div class="metode-type">E-Wallet</div>
+          </div>
+          <div class="metode-card" id="met-ovo" onclick="pilihMetode('ovo','OVO')">
+            <div class="metode-logo">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#4C3494"/>
+                <circle cx="24" cy="21" r="10" fill="white" opacity="0.15"/>
+                <circle cx="24" cy="21" r="7" fill="white" opacity="0.25"/>
+                <text x="24" y="25" font-family="Arial" font-weight="900" font-size="12" fill="white" text-anchor="middle">OVO</text>
+                <text x="24" y="38" font-family="Arial" font-weight="600" font-size="6" fill="#C9B8F0" text-anchor="middle">E-Wallet</text>
+              </svg>
+            </div>
+            <div class="metode-name">OVO</div>
+            <div class="metode-type">E-Wallet</div>
+          </div>
+          <div class="metode-card" id="met-shopeepay" onclick="pilihMetode('shopeepay','ShopeePay')">
+            <div class="metode-logo">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#EE4D2D"/>
+                <path d="M16 20 Q16 13 24 13 Q32 13 32 20" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <rect x="11" y="20" width="26" height="17" rx="3" fill="white"/>
+                <text x="24" y="32" font-family="Arial" font-weight="900" font-size="8.5" fill="#EE4D2D" text-anchor="middle">ShopeePay</text>
+              </svg>
+            </div>
+            <div class="metode-name">ShopeePay</div>
+            <div class="metode-type">E-Wallet</div>
+          </div>
+        </div>
+
+        <!-- MARKETPLACE / MINIMARKET -->
+        <div class="metode-group-label">🏪 Gerai Minimarket</div>
+        <div class="metode-grid" style="margin-bottom:4px">
+          <div class="metode-card" id="met-indomaret" onclick="pilihMetode('indomaret','Indomaret')">
+            <div class="metode-logo">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#E2001A"/>
+                <rect x="6" y="14" width="36" height="20" rx="3" fill="white"/>
+                <rect x="6" y="14" width="36" height="8" rx="3" fill="#E2001A"/>
+                <rect x="6" y="19" width="36" height="3" fill="#E2001A"/>
+                <text x="24" y="20" font-family="Arial" font-weight="900" font-size="6.5" fill="white" text-anchor="middle">INDOMARET</text>
+                <text x="24" y="32" font-family="Arial" font-weight="700" font-size="6" fill="#E2001A" text-anchor="middle">Bayar di Kasir</text>
+              </svg>
+            </div>
+            <div class="metode-name">Indomaret</div>
+            <div class="metode-type">Minimarket</div>
+          </div>
+          <div class="metode-card" id="met-alfamart" onclick="pilihMetode('alfamart','Alfamart')">
+            <div class="metode-logo">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="48" height="48" rx="10" fill="#E2001A"/>
+                <rect x="6" y="12" width="36" height="24" rx="3" fill="white"/>
+                <rect x="6" y="12" width="36" height="10" rx="3" fill="#E2001A"/>
+                <rect x="6" y="19" width="36" height="3" fill="#E2001A"/>
+                <text x="24" y="20" font-family="Arial" font-weight="900" font-size="6.5" fill="white" text-anchor="middle">alfamart</text>
+                <circle cx="14" cy="30" r="3" fill="#E2001A"/>
+                <circle cx="24" cy="30" r="3" fill="#E2001A"/>
+                <circle cx="34" cy="30" r="3" fill="#E2001A"/>
+                <text x="24" y="41" font-family="Arial" font-weight="700" font-size="5.5" fill="#888" text-anchor="middle">Bayar di Kasir</text>
+              </svg>
+            </div>
+            <div class="metode-name">Alfamart</div>
+            <div class="metode-type">Minimarket</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DETAIL PEMBAYARAN -->
+      <div class="pay-detail-box" id="payDetailBox">
+        <div class="pay-detail-title" id="payDetailTitle">Detail Pembayaran</div>
+        <div id="payDetailContent"></div>
+      </div>
+
+      <!-- UPLOAD BUKTI PEMBAYARAN -->
+      <div class="pay-detail-box" id="buktiBox" style="display:none">
+        <div class="pay-detail-title">📎 Upload Bukti Pembayaran</div>
+        <div style="font-size:.82rem;color:var(--muted);margin-bottom:14px;line-height:1.6">
+          Wajib diisi. Unggah foto/screenshot bukti transfer, struk, atau bukti bayar QRIS Anda agar tim kami dapat memverifikasi pembayaran dengan cepat.
+        </div>
+        <input type="file" id="buktiInput" accept="image/*,.pdf" onchange="handleBuktiUpload(event)"
+          style="background:#1e1e1e;border:1px solid var(--border);color:var(--text);padding:11px 14px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:.85rem;width:100%">
+        <div id="buktiPreviewWrap" style="margin-top:14px;display:none">
+          <div style="font-size:.78rem;color:var(--muted);margin-bottom:8px">Pratinjau bukti:</div>
+          <img id="buktiPreviewImg" style="max-width:100%;max-height:240px;border-radius:8px;border:1px solid var(--border);display:none">
+          <div id="buktiPreviewFile" style="display:none;background:#1e1e1e;border:1px solid var(--border);border-radius:8px;padding:12px 16px;font-size:.85rem;color:var(--text)"></div>
+        </div>
+        <div id="buktiWarning" style="display:none;margin-top:10px;font-size:.8rem;color:var(--danger);font-weight:600">
+          ⚠️ Bukti pembayaran wajib diunggah sebelum konfirmasi.
+        </div>
+      </div>
+
+      <!-- RINGKASAN & TOMBOL -->
+      <div class="pay-summary" id="paySummary" style="display:none">
+        <div>
+          <div class="pay-summary-label">Total Pembayaran</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:2px" id="summaryPaket">—</div>
+        </div>
+        <div class="pay-summary-total" id="summaryTotal">Rp 0</div>
+      </div>
+
+      <button class="pay-confirm-btn" id="payBtn" onclick="konfirmasiPembayaran()" disabled>
+        🔒 Konfirmasi Pembayaran
+      </button>
+    </div>
+
+    <!-- SUKSES -->
+    <div class="pay-success" id="paySuccess">
+      <div class="pay-success-icon">✅</div>
+      <h2>Pembayaran Berhasil!</h2>
+      <p id="paySuccessMsg">Terima kasih telah melakukan pembayaran. Tim kami akan segera menghubungi Anda.</p>
+      <button class="btn-primary" onclick="resetPembayaran()">🏠 Kembali ke Beranda</button>
+    </div>
+  </div>
+</div>
+<script>
+// ===================== KONFIGURASI PENYIMPANAN BERSAMA =====================
+// Catatan: Data disimpan di localStorage browser ini saja.
+// Halaman Admin (admin.html) membaca data dari kunci yang SAMA,
+// sehingga harus dibuka dari domain/origin yang sama (bukan file terpisah
+// yang dibuka langsung lewat double-click) agar data tersinkron.
+//
+// ✅ TESTING BANYAK KLIEN SEKALIGUS (di 1 komputer, TANPA incognito):
+// ID klien disimpan per-TAB (sessionStorage), bukan per-browser. Jadi:
+// - Tab klien #1 = klien pertama
+// - Buka tab BARU, buka klien.html lagi (Ctrl/Cmd+klik link, atau copy URL ke
+//   tab baru) = otomatis dianggap klien KEDUA, ketiga, dst.
+// - Refresh tab yang sama TIDAK membuat klien baru (riwayat tetap tersimpan).
+// Setiap tab yang kirim chat akan muncul sebagai percakapan TERPISAH di
+// sidebar tab "Chat Konsultasi" pada admin.html.
+const LS_DATA = 'alf_konsultasi_data';
+const LS_CHAT = 'alf_chat_store';
+const LS_PAY = 'alf_pembayaran_data';
+
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(LS_DATA) || '[]'); }
+  catch(e) { return []; }
+}
+function saveData(data) {
+  localStorage.setItem(LS_DATA, JSON.stringify(data));
+}
+function loadChat() {
+  try { return JSON.parse(localStorage.getItem(LS_CHAT) || '{}'); }
+  catch(e) { return {}; }
+}
+function saveChat(store) {
+  localStorage.setItem(LS_CHAT, JSON.stringify(store));
+}
+function loadPay() {
+  try { return JSON.parse(localStorage.getItem(LS_PAY) || '[]'); }
+  catch(e) { return []; }
+}
+function savePay(list) {
+  localStorage.setItem(LS_PAY, JSON.stringify(list));
+}
+
+// ===================== IDENTITAS KLIEN (per-tab) =====================
+// PENTING: ID klien disimpan di sessionStorage (bukan localStorage) agar SETIAP
+// TAB BARU dianggap sebagai klien yang BERBEDA. Ini memungkinkan testing/demo
+// banyak klien chat bersamaan ke Admin hanya dengan membuka beberapa tab di
+// browser yang sama (tidak perlu incognito).
+// - Refresh tab yang sama  -> ID tetap sama (riwayat chat tidak hilang).
+// - Buka tab baru          -> ID baru (dianggap klien baru oleh Admin).
+const SS_CLIENT_ID = 'alf_client_id_tab';
+let clientId = sessionStorage.getItem(SS_CLIENT_ID);
+if (!clientId) {
+  clientId = 'klien_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 6);
+  sessionStorage.setItem(SS_CLIENT_ID, clientId);
+}
+let clientName = '';
+let lastRenderedCount = 0;
+let floatOpen = false;
+
+function nowTime() {
+  return new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+}
+function nowFull() {
+  return new Date().toLocaleString('id-ID', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ===================== NAVIGASI =====================
+function showPage(id, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('nav ul li a').forEach(a => a.classList.remove('active'));
+  if (el) el.classList.add('active');
+  if (id === 'home') { updateStats(); }
+}
+
+// ===================== STATISTIK BERANDA =====================
+function updateStats() {
+  const data = loadData();
+  document.getElementById('totalStat').textContent = data.length;
+  document.getElementById('selesaiStat').textContent = data.filter(d => d.status === 'Selesai').length;
+  document.getElementById('prosesStat').textContent = data.filter(d => d.status === 'Diproses').length;
+  document.getElementById('menungguStat').textContent = data.filter(d => d.status === 'Menunggu').length;
+}
+
+// ===================== FORM KONSULTASI =====================
+function submitKonsultasi() {
+  const nama = document.getElementById('fNama').value.trim();
+  const email = document.getElementById('fEmail').value.trim();
+  const telp = document.getElementById('fTelp').value.trim();
+  const bidang = document.getElementById('fBidang').value;
+  const deskripsi = document.getElementById('fDeskripsi').value.trim();
+
+  if (!nama || !email || !telp || !bidang || !deskripsi) {
+    alert('⚠️ Harap lengkapi semua field yang wajib diisi (*)');
+    return;
+  }
+
+  const data = loadData();
+  const newId = data.length > 0 ? Math.max(...data.map(d => d.id)) + 1 : 1;
+  data.push({
+    id: newId,
+    clientId: clientId,
+    nama, nik: document.getElementById('fNIK').value,
+    email, telp,
+    bidang, urgensi: document.getElementById('fUrgensi').value,
+    alamat: document.getElementById('fAlamat').value,
+    deskripsi, status: 'Menunggu',
+    tanggal: new Date().toISOString().split('T')[0]
+  });
+  saveData(data);
+
+  // Simpan nama klien untuk sesi chat
+  clientName = nama;
+  const chat = loadChat();
+  if (!chat[clientId]) chat[clientId] = { name: clientName, bidang, messages: [], unreadAdmin: 0, unreadClient: 0 };
+  else { chat[clientId].name = clientName; chat[clientId].bidang = bidang; }
+  saveChat(chat);
+
+  // Tampilkan halaman sukses
+  document.getElementById('konsulFormWrap').style.display = 'none';
+  document.getElementById('successId').textContent = '#' + newId;
+  document.getElementById('konsulSuccess').classList.add('show');
+
+  updateStats();
+}
+
+function resetKonsulForm() {
+  ['fNama','fNIK','fEmail','fTelp','fAlamat','fDeskripsi'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fBidang').value = '';
+  document.getElementById('fUrgensi').value = 'Normal (1–3 hari)';
+  document.getElementById('konsulSuccess').classList.remove('show');
+  document.getElementById('konsulFormWrap').style.display = 'block';
+}
+
+// ===================== TOAST =====================
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.display = 'block';
+  setTimeout(() => t.style.display = 'none', 2800);
+}
+
+// ===================== CHAT (SISI KLIEN) =====================
+function toggleFloatChat() {
+  floatOpen = !floatOpen;
+  const panel = document.getElementById('chatFloatPanel');
+  if (floatOpen) {
+    panel.style.display = 'flex';
+    setTimeout(() => panel.classList.add('open'), 10);
+    document.getElementById('chatFloatBtn').innerHTML = '✕';
+    document.getElementById('floatBadge').style.display = 'none';
+    // tandai sudah dibaca klien
+    const chat = loadChat();
+    if (chat[clientId]) { chat[clientId].unreadClient = 0; saveChat(chat); }
+    scrollFloatBottom();
+  } else {
+    panel.classList.remove('open');
+    setTimeout(() => { panel.style.display = 'none'; }, 250);
+    document.getElementById('chatFloatBtn').innerHTML = '💬 <span class="chat-float-badge" id="floatBadge" style="display:none">1</span>';
+  }
+}
+
+function hapusChatKlien() {
+  if (!confirm('Hapus seluruh riwayat chat Anda dengan Admin? Tindakan ini tidak dapat dibatalkan.')) return;
+  const chat = loadChat();
+  if (chat[clientId]) {
+    chat[clientId].messages = [];
+    chat[clientId].unreadAdmin = 0;
+    chat[clientId].unreadClient = 0;
+    saveChat(chat);
+  }
+  lastRenderedCount = 0;
+  const box = document.getElementById('floatMessages');
+  box.innerHTML = `
+    <div class="float-msg msg-them">
+      <div class="float-bubble bubble-them">Selamat datang di <strong>AlifahLawFirm</strong>! 👋<br>Ada yang bisa kami bantu terkait konsultasi hukum Anda?</div>
+    </div>`;
+  showToast('🗑️ Riwayat chat Anda telah dihapus');
+}
+
+function clientSend() {
+  const inp = document.getElementById('floatInput');
+  const text = inp.value.trim();
+  if (!text) return;
+
+  if (!clientName) {
+    clientName = document.getElementById('fNama')?.value?.trim() || 'Klien';
+  }
+
+  const chat = loadChat();
+  if (!chat[clientId]) {
+    chat[clientId] = {
+      name: clientName || 'Klien',
+      bidang: document.getElementById('fBidang')?.value || 'Umum',
+      messages: [],
+      unreadAdmin: 0,
+      unreadClient: 0
+    };
+  }
+
+  const msg = { from: 'client', text, time: nowTime(), timeFull: nowFull() };
+  chat[clientId].messages.push(msg);
+  chat[clientId].unreadAdmin = (chat[clientId].unreadAdmin || 0) + 1;
+  saveChat(chat);
+
+  appendFloatMsg(msg, false);
+  lastRenderedCount++;
+  inp.value = '';
+  inp.style.height = 'auto';
+
+  // Auto-balasan otomatis sekali di awal (placeholder sebelum admin online)
+  const adminMsgs = chat[clientId].messages.filter(m => m.from === 'admin');
+  if (adminMsgs.length === 0) {
+    setTimeout(() => {
+      const c2 = loadChat();
+      if (!c2[clientId]) return;
+      const reply = {
+        from: 'admin',
+        text: 'Terima kasih telah menghubungi AlifahLawFirm! ⚖️ Pesan Anda sudah kami terima. Tim kami akan segera membalas. Mohon tunggu sebentar.',
+        time: nowTime(),
+        timeFull: nowFull()
+      };
+      c2[clientId].messages.push(reply);
+      saveChat(c2);
+      appendFloatMsg(reply, true);
+      lastRenderedCount++;
+      if (!floatOpen) {
+        const badge = document.getElementById('floatBadge');
+        badge.style.display = 'flex';
+        badge.textContent = (parseInt(badge.textContent) || 0) + 1;
+      }
+    }, 1500);
+  }
+}
+
+function appendFloatMsg(msg, isAdmin) {
+  const box = document.getElementById('floatMessages');
+  const div = document.createElement('div');
+  div.className = 'float-msg ' + (isAdmin ? 'msg-them' : 'msg-me');
+  div.innerHTML = `
+    <div class="float-bubble ${isAdmin ? 'bubble-them' : 'bubble-me'}">${escapeHtml(msg.text)}</div>
+    <div class="float-time">${isAdmin ? 'Tim Admin' : 'Anda'} · ${msg.time}</div>`;
+  box.appendChild(div);
+  scrollFloatBottom();
+}
+
+function scrollFloatBottom() {
+  const box = document.getElementById('floatMessages');
+  if (box) box.scrollTop = box.scrollHeight;
+}
+
+// Render ulang riwayat chat (saat load awal atau saat ada balasan baru dari admin)
+function renderFloatMessages() {
+  const chat = loadChat();
+  const box = document.getElementById('floatMessages');
+  const c = chat[clientId];
+  if (!c || !c.messages) { lastRenderedCount = 0; return; }
+
+  if (c.messages.length === lastRenderedCount) return;
+
+  // render hanya pesan baru
+  const newMsgs = c.messages.slice(lastRenderedCount);
+  newMsgs.forEach(msg => appendFloatMsg(msg, msg.from === 'admin'));
+
+  // jika ada pesan admin baru & panel tertutup, tampilkan badge
+  const newAdminMsgs = newMsgs.filter(m => m.from === 'admin');
+  if (newAdminMsgs.length > 0 && !floatOpen) {
+    const badge = document.getElementById('floatBadge');
+    badge.style.display = 'flex';
+    badge.textContent = String((parseInt(badge.textContent) || 0) + newAdminMsgs.length);
+  }
+  lastRenderedCount = c.messages.length;
+}
+
+function initFloatMessages() {
+  const chat = loadChat();
+  const c = chat[clientId];
+  const box = document.getElementById('floatMessages');
+  if (c && c.messages && c.messages.length > 0) {
+    // hapus pesan sambutan default, tampilkan riwayat asli
+    box.innerHTML = '';
+    c.messages.forEach(msg => appendFloatMsg(msg, msg.from === 'admin'));
+    lastRenderedCount = c.messages.length;
+  } else {
+    lastRenderedCount = 0;
+  }
+}
+
+// Sinkronisasi lintas tab/halaman (klien <-> admin) lewat localStorage
+window.addEventListener('storage', (e) => {
+  if (e.key === LS_CHAT) renderFloatMessages();
+  if (e.key === LS_DATA) updateStats();
+  if (e.key === LS_PAY) refreshNotifikasi();
+});
+setInterval(renderFloatMessages, 2000);
+setInterval(refreshNotifikasi, 4000);
+
+// === PEMBAYARAN ===
+let selectedPaket = null;
+let selectedMetode = null;
+let buktiData = null; // { name, type, dataUrl }
+
+document.getElementById('gKategori').addEventListener('change', cekBisaLanjut);
+document.getElementById('gAlasan').addEventListener('input', cekBisaLanjut);
+
+const rekeningData = {
+  bca:        { bank:'BCA', no:'123 456 7890', nama:'Alifah Law Firm', kode:'014' },
+  bri:        { bank:'BRI', no:'1234 5678 9012 345', nama:'Alifah Law Firm', kode:'002' },
+  mandiri:    { bank:'Mandiri', no:'123 0045 678 9012', nama:'Alifah Law Firm', kode:'008' },
+  bni:        { bank:'BNI', no:'1234 567 890', nama:'Alifah Law Firm', kode:'009' },
+  gopay:      { bank:'GoPay', no:'0812-3456-7890', nama:'Alifah Law Firm', kode:null },
+  dana:       { bank:'DANA', no:'0812-3456-7890', nama:'Alifah Law Firm', kode:null },
+  ovo:        { bank:'OVO', no:'0812-3456-7890', nama:'Alifah Law Firm', kode:null },
+  shopeepay:  { bank:'ShopeePay', no:'0812-3456-7890', nama:'Alifah Law Firm', kode:null },
+  indomaret:  { bank:'Indomaret', no:'88908-ALF-2024', nama:'Alifah Law Firm', kode:null },
+  alfamart:   { bank:'Alfamart', no:'77801-ALF-2024', nama:'Alifah Law Firm', kode:null },
+};
+
+function pilihPaket(id, harga, nama, desc) {
+  selectedPaket = { id, harga, nama, desc };
+  document.querySelectorAll('.paket-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('paket-' + id).classList.add('selected');
+
+  const gratisForm = document.getElementById('gratisForm');
+  const metodeSection = document.getElementById('metodeSection');
+
+  if (id === 'gratis') {
+    gratisForm.style.display = 'block';
+    metodeSection.style.display = 'none';
+    selectedMetode = { id: 'gratis', nama: 'Tanpa Pembayaran (Bantuan Hukum Gratis)' };
+    document.querySelectorAll('.metode-card').forEach(c => c.classList.remove('selected'));
+  } else {
+    gratisForm.style.display = 'none';
+    metodeSection.style.display = 'block';
+    if (selectedMetode && selectedMetode.id === 'gratis') selectedMetode = null;
+  }
+
+  refreshPayDetail();
+  cekBisaLanjut();
+}
+
+function pilihMetode(id, nama) {
+  selectedMetode = { id, nama };
+  buktiData = null;
+  document.getElementById('buktiInput').value = '';
+  document.getElementById('buktiPreviewWrap').style.display = 'none';
+  document.getElementById('buktiWarning').style.display = 'none';
+  document.querySelectorAll('.metode-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('met-' + id).classList.add('selected');
+  refreshPayDetail();
+  cekBisaLanjut();
+}
+
+function formatRupiah(n) {
+  return 'Rp ' + n.toLocaleString('id-ID');
+}
+
+function refreshPayDetail() {
+  if (!selectedPaket || !selectedMetode) return;
+
+  const box = document.getElementById('payDetailBox');
+  const title = document.getElementById('payDetailTitle');
+  const content = document.getElementById('payDetailContent');
+  const summary = document.getElementById('paySummary');
+  const sumPaket = document.getElementById('summaryPaket');
+  const sumTotal = document.getElementById('summaryTotal');
+
+  box.classList.add('show');
+  summary.style.display = 'flex';
+  sumPaket.textContent = selectedPaket.nama;
+  sumTotal.textContent = formatRupiah(selectedPaket.harga);
+  title.textContent = '📌 Informasi Pengajuan — ' + selectedPaket.nama;
+
+  const buktiBox = document.getElementById('buktiBox');
+
+  if (selectedPaket.id === 'gratis') {
+    buktiBox.style.display = 'none';
+    sumTotal.style.color = '#4CAF50';
+    content.innerHTML = `
+      <div class="pay-info-row"><div class="pay-info-label">Paket</div><div class="pay-info-value">${selectedPaket.nama}</div></div>
+      <div class="pay-info-row"><div class="pay-info-label">Biaya</div><div class="pay-info-value" style="color:#4CAF50">GRATIS</div></div>
+      <div class="pay-info-row"><div class="pay-info-label">Status</div><div class="pay-info-value">Menunggu Verifikasi</div></div>
+      <div style="background:#1e1e1e;border-radius:8px;padding:12px 16px;margin-top:12px;font-size:.82rem;color:var(--muted);line-height:1.7">
+        1. Lengkapi <strong style="color:var(--text)">Form Pengajuan Bantuan Hukum Gratis</strong> di atas<br>
+        2. Klik <strong style="color:#4CAF50">Ajukan Konsultasi Gratis</strong><br>
+        3. Tim kami akan memverifikasi kelayakan Anda (1×24 jam)<br>
+        4. Jika disetujui, sesi konsultasi akan dijadwalkan tanpa biaya
+      </div>`;
+    return;
+  }
+  sumTotal.style.color = '';
+  buktiBox.style.display = 'block';
+
+  const kode = generateKodePembayaran();
+
+  if (selectedMetode.id === 'qris') {
+    content.innerHTML = `
+      <div class="pay-info-row"><div class="pay-info-label">Paket</div><div class="pay-info-value">${selectedPaket.nama}</div></div>
+      <div class="pay-info-row"><div class="pay-info-label">Jumlah</div><div class="pay-info-value gold">${formatRupiah(selectedPaket.harga)}</div></div>
+      <div class="pay-info-row"><div class="pay-info-label">Kode Unik</div><div class="pay-info-value gold">${kode}</div></div>
+      <div class="qris-box">
+        <div class="qris-frame">
+          <svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+            ${generateQRPattern()}
+          </svg>
+        </div>
+        <div style="font-size:.85rem;font-weight:600;color:var(--text);margin-bottom:4px">QRIS AlifahLawFirm</div>
+        <div class="qris-note">Scan menggunakan aplikasi apapun yang mendukung QRIS<br>(GoPay, OVO, DANA, ShopeePay, Mobile Banking, dll)</div>
+      </div>
+      <div style="background:#1e1e1e;border-radius:8px;padding:12px 16px;margin-top:12px;font-size:.82rem;color:var(--muted);line-height:1.7">
+        1. Buka aplikasi pembayaran Anda<br>
+        2. Pilih menu <strong style="color:var(--text)">Scan QR / QRIS</strong><br>
+        3. Arahkan kamera ke barcode di atas<br>
+        4. Masukkan nominal <strong style="color:var(--gold)">${formatRupiah(selectedPaket.harga)}</strong> dan konfirmasi
+      </div>`;
+  } else if (['bca','bri','mandiri','bni'].includes(selectedMetode.id)) {
+    const rek = rekeningData[selectedMetode.id];
+    content.innerHTML = `
+      <div class="pay-info-row"><div class="pay-info-label">Paket</div><div class="pay-info-value">${selectedPaket.nama}</div></div>
+      <div class="pay-info-row"><div class="pay-info-label">Jumlah Transfer</div><div class="pay-info-value gold">${formatRupiah(selectedPaket.harga)}</div></div>
+      <div class="pay-info-row"><div class="pay-info-label">Kode Unik</div><div class="pay-info-value gold">${kode}</div></div>
+      <div class="rekening-box">
+        <div style="font-size:.8rem;color:var(--muted);margin-bottom:10px">Transfer ke rekening berikut:</div>
+        <div class="rek-item">
+          <div>
+            <div class="rek-bank">${rek.bank}</div>
+            <div class="rek-num">${rek.no}</div>
+            <div class="rek-name">a.n. ${rek.nama}</div>
+          </div>
+          <button class="copy-btn" onclick="copyRek('${rek.no}')">📋 Salin</button>
+        </div>
+      </div>
+      <div style="background:#1e1e1e;border-radius:8px;padding:12px 16px;margin-top:4px;font-size:.82rem;color:var(--muted);line-height:1.8">
+        1. Buka aplikasi <strong style="color:var(--text)">${selectedMetode.nama}</strong><br>
+        2. Pilih <strong style="color:var(--text)">Transfer Antar Bank</strong>${rek.kode ? ' (kode bank <strong style="color:var(--gold)">'+rek.kode+'</strong>)' : ''}<br>
+        3. Masukkan nomor rekening <strong style="color:var(--gold)">${rek.no}</strong><br>
+        4. Nominal: <strong style="color:var(--gold)">${formatRupiah(selectedPaket.harga)}</strong><br>
+        5. Simpan bukti transfer & kirim ke WhatsApp kami
+      </div>`;
+  } else if (['indomaret','alfamart'].includes(selectedMetode.id)) {
+    const rek = rekeningData[selectedMetode.id];
+    const warna = selectedMetode.id === 'indomaret' ? '#E2001A' : '#E2001A';
+    content.innerHTML = `
+      <div class="pay-info-row"><div class="pay-info-label">Paket</div><div class="pay-info-value">${selectedPaket.nama}</div></div>
+      <div class="pay-info-row"><div class="pay-info-label">Jumlah Bayar</div><div class="pay-info-value gold">${formatRupiah(selectedPaket.harga)}</div></div>
+      <div class="pay-info-row"><div class="pay-info-label">Kode Bayar</div><div class="pay-info-value gold" style="font-size:1.1rem;letter-spacing:2px">${kode}</div></div>
+      <div style="background:#1e1e1e;border:1px dashed ${warna}55;border-radius:10px;padding:18px;margin:16px 0;text-align:center">
+        <div style="font-size:.75rem;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Kode Pembayaran ${rek.bank}</div>
+        <div style="font-family:monospace;font-size:1.6rem;font-weight:900;color:${warna};letter-spacing:4px">${kode}</div>
+        <div style="font-size:.75rem;color:var(--muted);margin-top:6px">Tunjukkan kode ini ke kasir ${rek.bank}</div>
+        <button class="copy-btn" style="margin-top:12px" onclick="copyRek('${kode}')">📋 Salin Kode</button>
+      </div>
+      <div style="background:#1e1e1e;border-radius:8px;padding:14px 16px;font-size:.82rem;color:var(--muted);line-height:2">
+        <strong style="color:var(--text)">Cara Bayar di ${rek.bank}:</strong><br>
+        1. Kunjungi gerai <strong style="color:${warna}">${rek.bank}</strong> terdekat<br>
+        2. Beritahu kasir ingin membayar tagihan / transfer virtual<br>
+        3. Tunjukkan atau sebutkan kode: <strong style="color:var(--gold)">${kode}</strong><br>
+        4. Bayar sejumlah <strong style="color:var(--gold)">${formatRupiah(selectedPaket.harga)}</strong> + biaya admin<br>
+        5. Simpan struk sebagai bukti pembayaran<br>
+        6. Foto struk & kirimkan ke WhatsApp kami
+      </div>
+      <div style="background:rgba(201,168,76,0.07);border:1px solid rgba(201,168,76,0.2);border-radius:8px;padding:10px 14px;margin-top:10px;font-size:.78rem;color:var(--muted)">
+        ⏰ <strong style="color:var(--gold)">Batas Waktu Bayar:</strong> 24 jam sejak kode diterbitkan.<br>
+        💰 Biaya admin: Rp 2.500 – Rp 5.000 (ditentukan gerai).
+      </div>`;
+  } else {
+    const rek = rekeningData[selectedMetode.id];
+    content.innerHTML = `
+      <div class="pay-info-row"><div class="pay-info-label">Paket</div><div class="pay-info-value">${selectedPaket.nama}</div></div>
+      <div class="pay-info-row"><div class="pay-info-label">Jumlah</div><div class="pay-info-value gold">${formatRupiah(selectedPaket.harga)}</div></div>
+      <div class="pay-info-row"><div class="pay-info-label">Kode Unik</div><div class="pay-info-value gold">${kode}</div></div>
+      <div class="rekening-box">
+        <div style="font-size:.8rem;color:var(--muted);margin-bottom:10px">Kirim ke akun ${rek.bank} berikut:</div>
+        <div class="rek-item">
+          <div>
+            <div class="rek-bank">${rek.bank}</div>
+            <div class="rek-num">${rek.no}</div>
+            <div class="rek-name">a.n. ${rek.nama}</div>
+          </div>
+          <button class="copy-btn" onclick="copyRek('${rek.no}')">📋 Salin</button>
+        </div>
+      </div>
+      <div style="background:#1e1e1e;border-radius:8px;padding:12px 16px;margin-top:4px;font-size:.82rem;color:var(--muted);line-height:1.8">
+        1. Buka aplikasi <strong style="color:var(--text)">${rek.bank}</strong><br>
+        2. Pilih <strong style="color:var(--text)">Kirim Uang / Transfer</strong><br>
+        3. Masukkan nomor <strong style="color:var(--gold)">${rek.no}</strong><br>
+        4. Nominal: <strong style="color:var(--gold)">${formatRupiah(selectedPaket.harga)}</strong><br>
+        5. Simpan bukti bayar & kirim ke WhatsApp kami
+      </div>`;
+  }
+}
+
+function generateKodePembayaran() {
+  return 'ALF-' + Math.floor(10000 + Math.random() * 90000);
+}
+
+function generateQRPattern() {
+  let cells = '';
+  const seed = Math.floor(Math.random() * 9999);
+  for (let r = 0; r < 16; r++) {
+    for (let c = 0; c < 16; c++) {
+      const val = (seed * (r + 1) * (c + 1) * 31337) % 100;
+      if (val < 48 || (r < 3 && c < 3) || (r < 3 && c > 12) || (r > 12 && c < 3)) {
+        cells += `<rect x="${c*10}" y="${r*10}" width="9" height="9" fill="#000" rx="1"/>`;
+      }
+    }
+  }
+  cells += `<rect x="0" y="0" width="30" height="30" fill="none" stroke="#000" stroke-width="3"/>`;
+  cells += `<rect x="130" y="0" width="30" height="30" fill="none" stroke="#000" stroke-width="3"/>`;
+  cells += `<rect x="0" y="130" width="30" height="30" fill="none" stroke="#000" stroke-width="3"/>`;
+  cells += `<rect x="8" y="8" width="14" height="14" fill="#000"/>`;
+  cells += `<rect x="138" y="8" width="14" height="14" fill="#000"/>`;
+  cells += `<rect x="8" y="138" width="14" height="14" fill="#000"/>`;
+  return cells;
+}
+
+function copyRek(no) {
+  const clean = no.replace(/\s|-/g, '');
+  navigator.clipboard?.writeText(clean).catch(()=>{});
+  showToast('📋 Nomor ' + no + ' disalin!');
+}
+
+function handleBuktiUpload(e) {
+  const file = e.target.files[0];
+  const warning = document.getElementById('buktiWarning');
+  if (!file) {
+    buktiData = null;
+    document.getElementById('buktiPreviewWrap').style.display = 'none';
+    cekBisaLanjut();
+    return;
+  }
+  if (file.size > 2 * 1024 * 1024) {
+    showToast('⚠️ Ukuran file maksimal 2MB');
+    e.target.value = '';
+    buktiData = null;
+    document.getElementById('buktiPreviewWrap').style.display = 'none';
+    cekBisaLanjut();
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    buktiData = { name: file.name, type: file.type, dataUrl: ev.target.result };
+    const wrap = document.getElementById('buktiPreviewWrap');
+    const img = document.getElementById('buktiPreviewImg');
+    const fileBox = document.getElementById('buktiPreviewFile');
+    wrap.style.display = 'block';
+    if (file.type.startsWith('image/')) {
+      img.src = buktiData.dataUrl;
+      img.style.display = 'block';
+      fileBox.style.display = 'none';
+    } else {
+      img.style.display = 'none';
+      fileBox.style.display = 'block';
+      fileBox.textContent = '📄 ' + file.name;
+    }
+    if (warning) warning.style.display = 'none';
+    cekBisaLanjut();
+  };
+  reader.readAsDataURL(file);
+}
+
+function cekBisaLanjut() {
+  const btn = document.getElementById('payBtn');
+  if (!selectedPaket || !selectedMetode) {
+    btn.disabled = true;
+    return;
+  }
+  if (selectedPaket.id === 'gratis') {
+    const kategori = document.getElementById('gKategori').value;
+    const alasan = document.getElementById('gAlasan').value.trim();
+    btn.disabled = !(kategori && alasan);
+    btn.textContent = '💚 Ajukan Konsultasi Gratis';
+  } else {
+    btn.disabled = !buktiData;
+    btn.textContent = '🔒 Konfirmasi Pembayaran';
+  }
+}
+
+function konfirmasiPembayaran() {
+  if (!selectedPaket || !selectedMetode) return;
+  if (selectedPaket.id !== 'gratis' && !buktiData) {
+    document.getElementById('buktiWarning').style.display = 'block';
+    document.getElementById('buktiBox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    showToast('⚠️ Unggah bukti pembayaran terlebih dahulu!');
+    return;
+  }
+  document.getElementById('payForm').style.display = 'none';
+  const sMsg = document.getElementById('paySuccessMsg');
+  const successIcon = document.querySelector('#paySuccess .pay-success-icon');
+  const successTitle = document.querySelector('#paySuccess h2');
+
+  const chat = loadChat();
+  const namaKlien = (chat[clientId] && chat[clientId].name) || clientName || 'Klien';
+
+  const payList = loadPay();
+  const newPayId = payList.length > 0 ? Math.max(...payList.map(p => p.id)) + 1 : 1;
+  const kodeRef = generateKodePembayaran();
+
+  if (selectedPaket.id === 'gratis') {
+    successIcon.textContent = '🤝';
+    successTitle.textContent = 'Pengajuan Terkirim!';
+    const kategori = document.getElementById('gKategori').value;
+    const alasan = document.getElementById('gAlasan').value.trim();
+    const dokumen = document.getElementById('gDokumen').value.trim();
+    sMsg.textContent = 'Pengajuan konsultasi gratis (' + kategori + ') Anda telah kami terima dan sedang diverifikasi. Tim kami akan menghubungi Anda dalam 1×24 jam untuk konfirmasi kelayakan dan penjadwalan.';
+
+    payList.push({
+      id: newPayId,
+      clientId: clientId,
+      nama: namaKlien,
+      paket: selectedPaket.nama,
+      harga: 0,
+      metode: 'Bantuan Hukum Gratis',
+      kode: kodeRef,
+      status: 'Pengajuan Gratis',
+      kategori, alasan, dokumen,
+      tanggal: nowFull()
+    });
+  } else {
+    successIcon.textContent = '✅';
+    successTitle.textContent = 'Pembayaran Berhasil!';
+    sMsg.textContent = 'Pembayaran ' + formatRupiah(selectedPaket.harga) + ' untuk paket ' + selectedPaket.nama + ' via ' + selectedMetode.nama + ' sedang diverifikasi. Tim kami akan menghubungi Anda dalam 1×24 jam.';
+
+    payList.push({
+      id: newPayId,
+      clientId: clientId,
+      nama: namaKlien,
+      paket: selectedPaket.nama,
+      harga: selectedPaket.harga,
+      metode: selectedMetode.nama,
+      kode: kodeRef,
+      status: 'Menunggu Verifikasi',
+      bukti: buktiData,
+      tanggal: nowFull()
+    });
+  }
+  savePay(payList);
+  document.getElementById('paySuccess').classList.add('show');
+}
+
+function resetPembayaran() {
+  selectedPaket = null;
+  selectedMetode = null;
+  buktiData = null;
+  document.querySelectorAll('.paket-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.metode-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('gratisForm').style.display = 'none';
+  document.getElementById('metodeSection').style.display = 'block';
+  document.getElementById('gKategori').value = '';
+  document.getElementById('gAlasan').value = '';
+  document.getElementById('gDokumen').value = '';
+  document.getElementById('buktiBox').style.display = 'none';
+  document.getElementById('buktiInput').value = '';
+  document.getElementById('buktiPreviewWrap').style.display = 'none';
+  document.getElementById('buktiWarning').style.display = 'none';
+  document.getElementById('payBtn').textContent = '🔒 Konfirmasi Pembayaran';
+  document.getElementById('payDetailBox').classList.remove('show');
+  document.getElementById('paySummary').style.display = 'none';
+  document.getElementById('payBtn').disabled = true;
+  document.getElementById('payForm').style.display = 'block';
+  document.getElementById('paySuccess').classList.remove('show');
+  showPage('home', null);
+}
+
+// ===================== NOTIFIKASI PENOLAKAN =====================
+function getMyNotifs() {
+  const payList = loadPay();
+  return payList.filter(p => p.clientId === clientId && p.status === 'Ditolak');
+}
+
+function refreshNotifikasi() {
+  const myRejected = getMyNotifs();
+  const unread = myRejected.filter(p => !p.notifRead);
+
+  // Badge di nav
+  const dot = document.getElementById('notifDot');
+  if (unread.length > 0) {
+    dot.style.display = 'flex';
+    dot.textContent = unread.length;
+  } else {
+    dot.style.display = 'none';
+  }
+
+  // Daftar di panel
+  const list = document.getElementById('notifList');
+  if (myRejected.length === 0) {
+    list.innerHTML = '<div class="notif-empty">Belum ada notifikasi.</div>';
+  } else {
+    list.innerHTML = myRejected.slice().reverse().map(p => {
+      const judul = p.harga > 0 ? 'Pembayaran Ditolak' : 'Pengajuan Konsultasi Gratis Ditolak';
+      const desc = p.harga > 0
+        ? `Pembayaran untuk paket <strong style="color:var(--text)">${p.paket}</strong> (${formatRupiah(p.harga)}) via ${p.metode} ditolak oleh tim kami. Silakan periksa kembali bukti pembayaran atau pilih metode lain.`
+        : `Pengajuan konsultasi gratis Anda (<strong style="color:var(--text)">${p.kategori || ''}</strong>) belum dapat disetujui. Silakan hubungi tim kami melalui chat untuk informasi lebih lanjut.`;
+      return `<div class="notif-item ${p.notifRead ? '' : 'unread'}">
+        <div class="notif-item-title">❌ ${judul}</div>
+        <div class="notif-item-desc">${desc}</div>
+        <div class="notif-item-time">${p.tanggal} · Kode: ${p.kode}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Banner di halaman pembayaran untuk pengajuan terbaru yang belum dibaca
+  const bannerHolder = document.getElementById('rejectBannerHolder');
+  if (bannerHolder) {
+    if (unread.length > 0) {
+      const latest = unread[unread.length - 1];
+      const judul = latest.harga > 0 ? 'Pembayaran Anda Ditolak' : 'Pengajuan Konsultasi Gratis Ditolak';
+      const desc = latest.harga > 0
+        ? `Pembayaran untuk paket <strong>${latest.paket}</strong> (${formatRupiah(latest.harga)}) via ${latest.metode} dengan kode <strong>${latest.kode}</strong> ditolak oleh tim kami. Silakan periksa kembali bukti pembayaran Anda atau lakukan pembayaran ulang.`
+        : `Pengajuan konsultasi gratis Anda (kategori: <strong>${latest.kategori || '-'}</strong>) belum dapat disetujui. Silakan hubungi tim kami melalui chat untuk informasi lebih lanjut, atau pilih paket berbayar.`;
+      bannerHolder.innerHTML = `
+        <div class="reject-banner">
+          <div class="reject-banner-icon">❌</div>
+          <div>
+            <div class="reject-banner-title">${judul}</div>
+            <div class="reject-banner-desc">${desc}</div>
+          </div>
+          <button class="reject-banner-close" onclick="dismissRejectBanner(${latest.id})">✕</button>
+        </div>`;
+    } else {
+      bannerHolder.innerHTML = '';
+    }
+  }
+}
+
+function dismissRejectBanner(id) {
+  const payList = loadPay();
+  const idx = payList.findIndex(p => p.id === id);
+  if (idx !== -1) { payList[idx].notifRead = true; savePay(payList); }
+  refreshNotifikasi();
+}
+
+function markAllNotifRead() {
+  const payList = loadPay();
+  let changed = false;
+  payList.forEach(p => {
+    if (p.clientId === clientId && p.status === 'Ditolak' && !p.notifRead) {
+      p.notifRead = true; changed = true;
+    }
+  });
+  if (changed) savePay(payList);
+  refreshNotifikasi();
+}
+
+function toggleNotifPanel() {
+  document.getElementById('notifPanel').classList.toggle('open');
+}
+
+document.addEventListener('click', function(e) {
+  const wrap = document.querySelector('.notif-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('notifPanel').classList.remove('open');
+  }
+});
+
+// ===================== INIT =====================
+updateStats();
+initFloatMessages();
+refreshNotifikasi();
+</script>
+</body>
+</html>
